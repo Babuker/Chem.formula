@@ -1,3 +1,6 @@
+<!-- JavaScript Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 // ===========================================
 // script.js - Complete and Working Version
 // Chemical Formula Optimizer v1.0
