@@ -1,77 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>ChemFormula™ – Professional Formulation Tool</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<title>ChemFormula™ | Professional Formulation Software</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body>
 <header>
   <h1>ChemFormula™</h1>
   <p>Global Chemical Formulation Software</p>
+  <div class="lang">
+    <button onclick="setLang('en')">EN</button>
+    <button onclick="setLang('ar')">AR</button>
+  </div>
 </header>
 
 <main>
 
 <section class="card">
-  <h2>Active Ingredient (Manual Only)</h2>
-  <label>
-    Name
-    <input type="text" id="aiName" placeholder="e.g. Active X" />
-  </label>
-
-  <label>
-    Weight (kg)
-    <input type="number" id="aiWeight" min="0" step="0.01" />
-  </label>
+<h2 data-i18n="active">Active Ingredient (Manual Only)</h2>
+<input id="aiName" placeholder="Active Ingredient Name">
+<input id="aiWeight" type="number" step="0.01" placeholder="Weight (kg)">
 </section>
 
 <section class="card">
-  <h2>Total Unit Weight</h2>
-
-  <label>
-    <input type="radio" name="mode" value="manual" checked />
-    Manufacturer Input
-  </label>
-
-  <label>
-    <input type="radio" name="mode" value="auto" />
-    Auto Calculation
-  </label>
-
-  <input type="number" id="totalWeight" placeholder="Total weight (kg)" />
+<h2 data-i18n="total">Total Unit Weight</h2>
+<label><input type="radio" name="mode" value="manual" checked> Manufacturer</label>
+<label><input type="radio" name="mode" value="auto"> Auto</label>
+<input id="totalWeight" type="number" step="0.01" placeholder="Total Weight (kg)">
 </section>
 
 <section class="card">
-  <h2>Other Materials</h2>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Material</th>
-        <th>Weight (kg)</th>
-      </tr>
-    </thead>
-    <tbody id="materials"></tbody>
-  </table>
-
-  <button id="addMaterial">Add Material</button>
+<h2>Other Materials</h2>
+<table>
+<thead>
+<tr><th>Name</th><th>Weight (kg)</th></tr>
+</thead>
+<tbody id="materials"></tbody>
+</table>
+<button id="addMaterial">+ Add Material</button>
 </section>
 
-<section class="card summary">
-  <p id="status">Waiting for input…</p>
+<section class="card">
+<canvas id="chart"></canvas>
+</section>
+
+<section class="card">
+<button id="exportPDF">Export Professional PDF</button>
+<p id="status"></p>
 </section>
 
 </main>
 
 <footer>
-  <a href="legal/terms.html">Terms</a> |
-  <a href="legal/privacy.html">Privacy</a> |
-  <a href="legal/disclaimer.html">Disclaimer</a>
+<a href="legal/terms.html">Terms</a> |
+<a href="legal/privacy.html">Privacy</a> |
+<a href="legal/disclaimer.html">Disclaimer</a>
 </footer>
 
+<script src="i18n.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
