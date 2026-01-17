@@ -1,17 +1,16 @@
 // ===========================================
-// script.js - الملف الكامل والمصحح
+// script.js - Complete and Working Version
+// Chemical Formula Optimizer v1.0
 // ===========================================
 
-// ===========================================
-// المتغيرات العامة
-// ===========================================
+// Global Variables
 let manualExcipients = [];
 let currentInputMethod = 'auto';
 let currentReference = 'bp';
 let currentProductForm = '';
 
 // ===========================================
-// أدوات مساعدة
+// Helper Functions
 // ===========================================
 function showToast(message, type = 'info', duration = 3000) {
     const toast = document.createElement('div');
@@ -31,22 +30,24 @@ function format(num, d = 2) {
 }
 
 // ===========================================
-// التهيئة عند تحميل الصفحة
+// Page Initialization
 // ===========================================
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize input method
     selectInputMethod('auto');
 
-    // المرجعية
+    // Pharmacopeia reference selection
     document.querySelectorAll('.reference-badge').forEach(badge => {
         badge.addEventListener('click', () => {
             document.querySelectorAll('.reference-badge').forEach(b => b.classList.remove('active'));
             badge.classList.add('active');
             currentReference = badge.dataset.reference;
             document.getElementById('reference').value = currentReference;
+            showToast(`Reference set to ${currentReference.toUpperCase()}`, 'success');
         });
     });
 
-    // شكل المنتج
+    // Product form selection
     document.querySelectorAll('.product-form-option').forEach(option => {
         option.addEventListener('click', () => {
             document.querySelectorAll('.product-form-option').forEach(o => o.classList.remove('active'));
@@ -54,23 +55,67 @@ document.addEventListener('DOMContentLoaded', () => {
             currentProductForm = option.dataset.form;
             document.getElementById('productForm').value = currentProductForm;
             updateUnitLabels();
+            showToast(`Product form: ${getProductFormName(currentProductForm)}`, 'info');
         });
     });
 
-    // الميزانية
+    // Set default product form if none selected
+    if (!currentProductForm && document.querySelector('.product-form-option')) {
+        document.querySelector('.product-form-option[data-form="tablet-uncoated"]').click();
+    }
+
+    // Budget slider
     const budget = document.getElementById('budget');
     const budgetValue = document.getElementById('budgetValue');
     if (budget && budgetValue) {
         budgetValue.textContent = budget.value;
-        budget.addEventListener('input', () => budgetValue.textContent = budget.value);
+        budget.addEventListener('input', () => {
+            budgetValue.textContent = budget.value;
+        });
     }
 
-    // تحديث المقترحات الآلية
+    // Update auto suggestions
     updateAutoSuggestions();
+    
+    // Custom excipient name field
+    const excipientName = document.getElementById('excipientName');
+    if (excipientName) {
+        excipientName.addEventListener('change', function() {
+            const customNameField = document.getElementById('customExcipientName');
+            const customNameLabel = document.getElementById('customNameLabel');
+            
+            if (this.value === 'custom') {
+                customNameField.style.display = 'block';
+                customNameLabel.style.display = 'block';
+                customNameField.required = true;
+            } else {
+                customNameField.style.display = 'none';
+                customNameLabel.style.display = 'none';
+                customNameField.required = false;
+            }
+        });
+    }
+
+    // Auto settings listeners
+    const autoSettings = ['costStrategy', 'productionStrategy', 'performancePriority'];
+    autoSettings.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('change', updateAutoSuggestions);
+        }
+    });
+
+    // Form submission
+    const formulaForm = document.getElementById('formulaForm');
+    if (formulaForm) {
+        formulaForm.addEventListener('submit', handleFormSubmit);
+    }
+
+    console.log('Chemical Formula Optimizer initialized successfully!');
 });
 
 // ===========================================
-// تحديث تسميات الوحدات
+// Unit Label Management
 // ===========================================
 function updateUnitLabels() {
     const unitLabel = document.getElementById('unitLabel');
@@ -78,20 +123,35 @@ function updateUnitLabels() {
     
     if (!currentProductForm) return;
     
+    const isRTL = document.documentElement.dir === 'rtl';
+    
     if (currentProductForm === 'syrup') {
-        if (unitLabel) unitLabel.textContent = 'مل';
-        if (totalUnitLabel) totalUnitLabel.textContent = 'مل (لكل مل)';
+        if (unitLabel) unitLabel.textContent = isRTL ? 'مل' : 'ml';
+        if (totalUnitLabel) totalUnitLabel.textContent = isRTL ? 'مل (لكل مل)' : 'ml (per ml)';
     } else if (currentProductForm.includes('tablet') || currentProductForm === 'capsule') {
-        if (unitLabel) unitLabel.textContent = 'مجم';
-        if (totalUnitLabel) totalUnitLabel.textContent = 'مجم (لكل وحدة)';
+        if (unitLabel) unitLabel.textContent = isRTL ? 'مجم' : 'mg';
+        if (totalUnitLabel) totalUnitLabel.textContent = isRTL ? 'مجم (لكل وحدة)' : 'mg (per unit)';
     } else if (currentProductForm === 'powder') {
-        if (unitLabel) unitLabel.textContent = 'جرام';
-        if (totalUnitLabel) totalUnitLabel.textContent = 'جرام (لكل جرام)';
+        if (unitLabel) unitLabel.textContent = isRTL ? 'جرام' : 'g';
+        if (totalUnitLabel) totalUnitLabel.textContent = isRTL ? 'جرام (لكل جرام)' : 'g (per g)';
     }
 }
 
+function getProductFormName(form) {
+    const forms = {
+        'tablet-uncoated': { en: 'Uncoated Tablet', ar: 'قرص غير مغلف' },
+        'tablet-coated': { en: 'Coated Tablet', ar: 'قرص مغلف' },
+        'capsule': { en: 'Capsule', ar: 'كبسولة' },
+        'syrup': { en: 'Syrup', ar: 'شراب' },
+        'powder': { en: 'Powder', ar: 'مسحوق' }
+    };
+    
+    const isRTL = document.documentElement.dir === 'rtl';
+    return forms[form] ? (isRTL ? forms[form].ar : forms[form].en) : form;
+}
+
 // ===========================================
-// المواد الفعالة
+// Active Ingredients Management
 // ===========================================
 function addIngredientRow() {
     const container = document.getElementById('activeIngredientsContainer');
@@ -100,18 +160,18 @@ function addIngredientRow() {
     row.className = 'ingredient-row';
     row.innerHTML = `
         <select class="active-ingredient" required>
-            <option value="">اختر المادة الفعالة...</option>
-            <option value="paracetamol">باراسيتامول (Paracetamol)</option>
-            <option value="ibuprofen">آيبوبروفين (Ibuprofen)</option>
-            <option value="amoxicillin">أموكسيسيلين (Amoxicillin)</option>
-            <option value="silver-iodide">يوديد الفضة</option>
-            <option value="titanium-dioxide">ثاني أكسيد التيتانيوم</option>
-            <option value="vitamin-c">فيتامين ج</option>
+            <option value="">${document.documentElement.dir === 'rtl' ? 'اختر المادة الفعالة...' : 'Select Active Ingredient...'}</option>
+            <option value="paracetamol">${document.documentElement.dir === 'rtl' ? 'باراسيتامول' : 'Paracetamol'}</option>
+            <option value="ibuprofen">${document.documentElement.dir === 'rtl' ? 'آيبوبروفين' : 'Ibuprofen'}</option>
+            <option value="amoxicillin">${document.documentElement.dir === 'rtl' ? 'أموكسيسيلين' : 'Amoxicillin'}</option>
+            <option value="silver-iodide">${document.documentElement.dir === 'rtl' ? 'يوديد الفضة' : 'Silver Iodide'}</option>
+            <option value="titanium-dioxide">${document.documentElement.dir === 'rtl' ? 'ثاني أكسيد التيتانيوم' : 'Titanium Dioxide'}</option>
+            <option value="vitamin-c">${document.documentElement.dir === 'rtl' ? 'فيتامين ج' : 'Vitamin C'}</option>
         </select>
         
         <div class="input-with-unit">
             <input type="number" class="active-ingredient-amount" min="0.1" step="0.1" value="500" required>
-            <div class="unit">مجم</div>
+            <div class="unit">${document.documentElement.dir === 'rtl' ? 'مجم' : 'mg'}</div>
         </div>
         
         <button type="button" class="remove-ingredient" onclick="removeIngredientRow(this)">
@@ -119,12 +179,17 @@ function addIngredientRow() {
         </button>
     `;
     container.appendChild(row);
+    
+    showToast(document.documentElement.dir === 'rtl' ? 'تمت إضافة صف جديد للمادة الفعالة' : 'New active ingredient row added', 'success');
 }
 
 function removeIngredientRow(btn) {
     const rows = document.querySelectorAll('.ingredient-row');
     if (rows.length > 1) {
         btn.closest('.ingredient-row').remove();
+        showToast(document.documentElement.dir === 'rtl' ? 'تم إزالة صف المادة الفعالة' : 'Active ingredient row removed', 'info');
+    } else {
+        showToast(document.documentElement.dir === 'rtl' ? 'يجب أن يكون هناك مادة فعالة واحدة على الأقل' : 'At least one active ingredient is required', 'warning');
     }
 }
 
@@ -141,7 +206,7 @@ function getActiveIngredients() {
 }
 
 // ===========================================
-// طريقة الإدخال
+// Input Method Selection
 // ===========================================
 function selectInputMethod(method) {
     currentInputMethod = method;
@@ -152,25 +217,62 @@ function selectInputMethod(method) {
     
     document.getElementById('manualOption').classList.toggle('selected', method === 'manual');
     document.getElementById('autoOption').classList.toggle('selected', method === 'auto');
+    
+    showToast(
+        method === 'manual' 
+            ? (document.documentElement.dir === 'rtl' ? 'تم التبديل إلى الوضع اليدوي' : 'Switched to manual mode')
+            : (document.documentElement.dir === 'rtl' ? 'تم التبديل إلى الوضع الآلي' : 'Switched to automatic mode'),
+        'success'
+    );
 }
 
 // ===========================================
-// المواد المساعدة (يدوي)
+// Manual Excipients Management
 // ===========================================
 function addManualExcipient() {
     const nameSel = document.getElementById('excipientName');
     const funcSel = document.getElementById('excipientFunction');
-    const perc = parseFloat(document.getElementById('excipientPercentage').value);
+    const percInput = document.getElementById('excipientPercentage');
     
-    if (!nameSel.value || !perc) {
-        showToast('يرجى إدخال جميع البيانات', 'warning');
+    if (!nameSel || !funcSel || !percInput) {
+        showToast('System error: Form elements not found', 'error');
         return;
+    }
+    
+    const name = nameSel.value;
+    const perc = parseFloat(percInput.value);
+    
+    if (!name || !perc || perc <= 0) {
+        showToast(
+            document.documentElement.dir === 'rtl' 
+                ? 'يرجى إدخال جميع البيانات بشكل صحيح'
+                : 'Please enter all data correctly',
+            'warning'
+        );
+        return;
+    }
+    
+    let displayName = nameSel.options[nameSel.selectedIndex].text;
+    
+    // Handle custom excipient
+    if (name === 'custom') {
+        const customName = document.getElementById('customExcipientName').value;
+        if (!customName) {
+            showToast(
+                document.documentElement.dir === 'rtl' 
+                    ? 'يرجى إدخال اسم المادة المخصصة'
+                    : 'Please enter custom excipient name',
+                'warning'
+            );
+            return;
+        }
+        displayName = customName;
     }
     
     const excipient = {
         id: Date.now(),
-        name: nameSel.value,
-        displayName: nameSel.options[nameSel.selectedIndex].text,
+        name: name,
+        displayName: displayName,
         function: funcSel.value,
         functionText: funcSel.options[funcSel.selectedIndex].text,
         percentage: perc
@@ -178,22 +280,36 @@ function addManualExcipient() {
     
     manualExcipients.push(excipient);
     updateManualExcipientsList();
-    showToast('تمت إضافة المادة بنجاح', 'success');
+    
+    // Reset form
+    nameSel.value = '';
+    percInput.value = '5';
+    document.getElementById('customExcipientName').style.display = 'none';
+    document.getElementById('customNameLabel').style.display = 'none';
+    
+    showToast(
+        document.documentElement.dir === 'rtl' 
+            ? `تمت إضافة ${displayName} بنجاح`
+            : `${displayName} added successfully`,
+        'success'
+    );
 }
 
 function updateManualExcipientsList() {
     const listElement = document.getElementById('manualExcipientsList');
     const countElement = document.getElementById('manualExcipientsCount');
     
+    if (!listElement || !countElement) return;
+    
     if (manualExcipients.length === 0) {
         listElement.innerHTML = `
             <div style="text-align: center; padding: 30px; color: #999;">
                 <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                <p>لم يتم إضافة أي مواد مساعدة بعد</p>
-                <small>استخدم النموذج أعلاه لإضافة المواد</small>
+                <p>${document.documentElement.dir === 'rtl' ? 'لم يتم إضافة أي مواد مساعدة بعد' : 'No excipients added yet'}</p>
+                <small>${document.documentElement.dir === 'rtl' ? 'استخدم النموذج أعلاه لإضافة المواد' : 'Use the form above to add excipients'}</small>
             </div>
         `;
-        countElement.textContent = '(0 مادة)';
+        countElement.textContent = document.documentElement.dir === 'rtl' ? '(0 مادة)' : '(0 items)';
         return;
     }
     
@@ -216,27 +332,39 @@ function updateManualExcipientsList() {
     });
     
     listElement.innerHTML = html;
-    countElement.textContent = `(${manualExcipients.length} مادة)`;
+    countElement.textContent = document.documentElement.dir === 'rtl' 
+        ? `(${manualExcipients.length} مادة)` 
+        : `(${manualExcipients.length} items)`;
 }
 
 function removeManualExcipient(id) {
     manualExcipients = manualExcipients.filter(excipient => excipient.id !== id);
     updateManualExcipientsList();
-    showToast('تم حذف المادة', 'info');
+    showToast(
+        document.documentElement.dir === 'rtl' ? 'تم حذف المادة' : 'Excipient removed',
+        'info'
+    );
 }
 
 function clearManualExcipients() {
     if (manualExcipients.length === 0) return;
     
-    if (confirm('هل أنت متأكد من مسح جميع المواد المضافة؟')) {
+    const message = document.documentElement.dir === 'rtl' 
+        ? 'هل أنت متأكد من مسح جميع المواد المضافة؟'
+        : 'Are you sure you want to clear all excipients?';
+    
+    if (confirm(message)) {
         manualExcipients = [];
         updateManualExcipientsList();
-        showToast('تم مسح جميع المواد', 'info');
+        showToast(
+            document.documentElement.dir === 'rtl' ? 'تم مسح جميع المواد' : 'All excipients cleared',
+            'info'
+        );
     }
 }
 
 function loadCommonFormulation() {
-    const productForm = document.getElementById('productForm').value;
+    const productForm = document.getElementById('productForm').value || 'tablet-uncoated';
     
     manualExcipients = [];
     
@@ -245,33 +373,33 @@ function loadCommonFormulation() {
             {
                 id: Date.now(),
                 name: 'mcc',
-                displayName: 'سليولوز ميكروكريستاليني (MCC)',
+                displayName: document.documentElement.dir === 'rtl' ? 'سليولوز ميكروكريستاليني (MCC)' : 'Microcrystalline Cellulose (MCC)',
                 function: 'filler',
-                functionText: 'مادة مالئة',
+                functionText: document.documentElement.dir === 'rtl' ? 'مادة مالئة' : 'Filler',
                 percentage: 30
             },
             {
                 id: Date.now() + 1,
                 name: 'povidone',
-                displayName: 'بوفيدون K30',
+                displayName: document.documentElement.dir === 'rtl' ? 'بوفيدون K30' : 'Povidone K30',
                 function: 'binder',
-                functionText: 'مادة رابطة',
+                functionText: document.documentElement.dir === 'rtl' ? 'مادة رابطة' : 'Binder',
                 percentage: 2
             },
             {
                 id: Date.now() + 2,
                 name: 'croscarmellose',
-                displayName: 'صوديوم كروكارميلوز',
+                displayName: document.documentElement.dir === 'rtl' ? 'صوديوم كروكارميلوز' : 'Sodium Croscarmellose',
                 function: 'disintegrant',
-                functionText: 'مادة مفككة',
+                functionText: document.documentElement.dir === 'rtl' ? 'مادة مفككة' : 'Disintegrant',
                 percentage: 1.5
             },
             {
                 id: Date.now() + 3,
                 name: 'magnesium-stearate',
-                displayName: 'ستيرات المغنيسيوم',
+                displayName: document.documentElement.dir === 'rtl' ? 'ستيرات المغنيسيوم' : 'Magnesium Stearate',
                 function: 'lubricant',
-                functionText: 'مادة مزلقة',
+                functionText: document.documentElement.dir === 'rtl' ? 'مادة مزلقة' : 'Lubricant',
                 percentage: 0.5
             }
         ];
@@ -280,28 +408,33 @@ function loadCommonFormulation() {
             {
                 id: Date.now(),
                 name: 'lactose',
-                displayName: 'لاكتوز اللامائي',
+                displayName: document.documentElement.dir === 'rtl' ? 'لاكتوز اللامائي' : 'Anhydrous Lactose',
                 function: 'filler',
-                functionText: 'مادة مالئة',
+                functionText: document.documentElement.dir === 'rtl' ? 'مادة مالئة' : 'Filler',
                 percentage: 35
             },
             {
                 id: Date.now() + 1,
                 name: 'magnesium-stearate',
-                displayName: 'ستيرات المغنيسيوم',
+                displayName: document.documentElement.dir === 'rtl' ? 'ستيرات المغنيسيوم' : 'Magnesium Stearate',
                 function: 'lubricant',
-                functionText: 'مادة مزلقة',
+                functionText: document.documentElement.dir === 'rtl' ? 'مادة مزلقة' : 'Lubricant',
                 percentage: 0.5
             }
         ];
     }
     
     updateManualExcipientsList();
-    showToast('تم تحميل تركيبة شائعة', 'success');
+    showToast(
+        document.documentElement.dir === 'rtl' 
+            ? 'تم تحميل تركيبة شائعة بناءً على نوع المنتج'
+            : 'Common formulation loaded based on product type',
+        'success'
+    );
 }
 
 // ===========================================
-// المواد المساعدة (آلي)
+// Automatic Excipients Management
 // ===========================================
 function updateAutoSuggestions() {
     const costStrategy = document.getElementById('costStrategy')?.value || 'balanced';
@@ -311,11 +444,17 @@ function updateAutoSuggestions() {
     let suggestions = [];
     
     if (costStrategy === 'lowest') {
-        suggestions = ['نشا الذرة', 'لاكتوز', 'ستيرات مغنيسيوم', 'نشا صوديوم جليكولات'];
+        suggestions = document.documentElement.dir === 'rtl' 
+            ? ['نشا الذرة', 'لاكتوز', 'ستيرات مغنيسيوم', 'نشا صوديوم جليكولات']
+            : ['Corn Starch', 'Lactose', 'Magnesium Stearate', 'Sodium Starch Glycolate'];
     } else if (costStrategy === 'balanced') {
-        suggestions = ['سليولوز ميكروكريستاليني', 'بوفيدون', 'كروسكارميلوز', 'ستيرات مغنيسيوم'];
+        suggestions = document.documentElement.dir === 'rtl' 
+            ? ['سليولوز ميكروكريستاليني', 'بوفيدون', 'كروسكارميلوز', 'ستيرات مغنيسيوم']
+            : ['Microcrystalline Cellulose', 'Povidone', 'Croscarmellose', 'Magnesium Stearate'];
     } else {
-        suggestions = ['مانيتول', 'هيدروكسي بروبيل ميثيل سليولوز', 'كروسپوفيدون', 'ثاني أكسيد السيليكون'];
+        suggestions = document.documentElement.dir === 'rtl' 
+            ? ['مانيتول', 'هيدروكسي بروبيل ميثيل سليولوز', 'كروسپوفيدون', 'ثاني أكسيد السيليكون']
+            : ['Mannitol', 'HPMC', 'Crospovidone', 'Silicon Dioxide'];
     }
     
     const previewElement = document.getElementById('autoExcipientsPreview');
@@ -330,12 +469,18 @@ function updateAutoSuggestions() {
 
 function regenerateAutoSuggestions() {
     updateAutoSuggestions();
-    showToast('تم إعادة توليد المقترحات', 'success');
+    showToast(
+        document.documentElement.dir === 'rtl' 
+            ? 'تم إعادة توليد المقترحات بنجاح'
+            : 'Suggestions regenerated successfully',
+        'success'
+    );
 }
 
 function generateAutoExcipients() {
     const costStrategy = document.getElementById('costStrategy')?.value || 'balanced';
     const productForm = document.getElementById('productForm')?.value || 'tablet-uncoated';
+    const isRTL = document.documentElement.dir === 'rtl';
     
     let excipients = [];
     
@@ -343,30 +488,32 @@ function generateAutoExcipients() {
         excipients = [
             {
                 name: 'filler',
-                displayName: costStrategy === 'lowest' ? 'لاكتوز' : 'سليولوز ميكروكريستاليني',
+                displayName: costStrategy === 'lowest' 
+                    ? (isRTL ? 'لاكتوز' : 'Lactose')
+                    : (isRTL ? 'سليولوز ميكروكريستاليني' : 'Microcrystalline Cellulose'),
                 function: 'filler',
-                functionText: 'مادة مالئة',
+                functionText: isRTL ? 'مادة مالئة' : 'Filler',
                 percentage: costStrategy === 'lowest' ? 35 : 30
             },
             {
                 name: 'binder',
-                displayName: 'بوفيدون K30',
+                displayName: isRTL ? 'بوفيدون K30' : 'Povidone K30',
                 function: 'binder',
-                functionText: 'مادة رابطة',
+                functionText: isRTL ? 'مادة رابطة' : 'Binder',
                 percentage: 2
             },
             {
                 name: 'disintegrant',
-                displayName: 'صوديوم كروكارميلوز',
+                displayName: isRTL ? 'صوديوم كروكارميلوز' : 'Sodium Croscarmellose',
                 function: 'disintegrant',
-                functionText: 'مادة مفككة',
+                functionText: isRTL ? 'مادة مفككة' : 'Disintegrant',
                 percentage: 1.5
             },
             {
                 name: 'lubricant',
-                displayName: 'ستيرات المغنيسيوم',
+                displayName: isRTL ? 'ستيرات المغنيسيوم' : 'Magnesium Stearate',
                 function: 'lubricant',
-                functionText: 'مادة مزلقة',
+                functionText: isRTL ? 'مادة مزلقة' : 'Lubricant',
                 percentage: 0.5
             }
         ];
@@ -374,17 +521,34 @@ function generateAutoExcipients() {
         excipients = [
             {
                 name: 'filler',
-                displayName: 'لاكتوز اللامائي',
+                displayName: isRTL ? 'لاكتوز اللامائي' : 'Anhydrous Lactose',
                 function: 'filler',
-                functionText: 'مادة مالئة',
+                functionText: isRTL ? 'مادة مالئة' : 'Filler',
                 percentage: 40
             },
             {
                 name: 'lubricant',
-                displayName: 'ستيرات المغنيسيوم',
+                displayName: isRTL ? 'ستيرات المغنيسيوم' : 'Magnesium Stearate',
                 function: 'lubricant',
-                functionText: 'مادة مزلقة',
+                functionText: isRTL ? 'مادة مزلقة' : 'Lubricant',
                 percentage: 0.5
+            }
+        ];
+    } else if (productForm === 'syrup') {
+        excipients = [
+            {
+                name: 'sweetener',
+                displayName: isRTL ? 'سكروز' : 'Sucrose',
+                function: 'sweetener',
+                functionText: isRTL ? 'محلي' : 'Sweetener',
+                percentage: 60
+            },
+            {
+                name: 'preservative',
+                displayName: isRTL ? 'ميثيل بارابين' : 'Methyl Paraben',
+                function: 'preservative',
+                functionText: isRTL ? 'مادة حافظة' : 'Preservative',
+                percentage: 0.1
             }
         ];
     }
@@ -393,12 +557,12 @@ function generateAutoExcipients() {
 }
 
 // ===========================================
-// معالجة النموذج
+// Form Submission Handler
 // ===========================================
-document.getElementById('formulaForm').addEventListener('submit', function(e) {
+function handleFormSubmit(e) {
     e.preventDefault();
     
-    // التحقق من البيانات الأساسية
+    // Get form values
     const formulaName = document.getElementById('formulaName').value;
     const reference = document.getElementById('reference').value;
     const productForm = document.getElementById('productForm').value;
@@ -406,32 +570,43 @@ document.getElementById('formulaForm').addEventListener('submit', function(e) {
     
     const activeIngredients = getActiveIngredients();
     
+    // Validation
     if (!formulaName || !reference || !productForm || !primaryGoal || activeIngredients.length === 0) {
-        showToast('يرجى ملء جميع الحقول المطلوبة', 'error');
+        showToast(
+            document.documentElement.dir === 'rtl' 
+                ? 'يرجى ملء جميع الحقول المطلوبة'
+                : 'Please fill all required fields',
+            'error'
+        );
         return;
     }
     
-    // الحصول على المواد المضافة
+    // Get excipients based on input method
     const excipients = currentInputMethod === 'manual' ? manualExcipients : generateAutoExcipients();
     
     if (excipients.length === 0) {
-        showToast('يرجى إضافة المواد المساعدة', 'error');
+        showToast(
+            document.documentElement.dir === 'rtl' 
+                ? 'يرجى إضافة المواد المساعدة'
+                : 'Please add excipients',
+            'error'
+        );
         return;
     }
     
-    // التحقق من مجموع النسب
-    const totalPercentage = validateTotalPercentage(activeIngredients, excipients);
-    if (!totalPercentage.valid) {
-        showToast(totalPercentage.message, 'error');
+    // Validate total percentage
+    const totalValidation = validateTotalPercentage(activeIngredients, excipients);
+    if (!totalValidation.valid) {
+        showToast(totalValidation.message, 'error');
         return;
     }
     
-    // عرض النتائج
+    // Display results
     displayResults(formulaName, reference, productForm, primaryGoal, activeIngredients, excipients);
-});
+}
 
 // ===========================================
-// التحقق من النسبة المئوية
+// Percentage Validation
 // ===========================================
 function validateTotalPercentage(activeIngredients, excipients) {
     let totalActive = 0;
@@ -445,12 +620,15 @@ function validateTotalPercentage(activeIngredients, excipients) {
     });
     
     const total = totalActive + totalExcipients;
-    const tolerance = 0.1; // 0.1% هامش خطأ
+    const tolerance = 0.1;
+    const isRTL = document.documentElement.dir === 'rtl';
     
     if (Math.abs(total - 100) > tolerance) {
         return {
             valid: false,
-            message: `مجموع النسب ${total.toFixed(2)}% يجب أن يكون 100%`
+            message: isRTL 
+                ? `مجموع النسب ${total.toFixed(2)}% يجب أن يكون 100%`
+                : `Total percentage ${total.toFixed(2)}% must equal 100%`
         };
     }
     
@@ -458,54 +636,82 @@ function validateTotalPercentage(activeIngredients, excipients) {
 }
 
 // ===========================================
-// عرض النتائج
+// Results Display
 // ===========================================
 function displayResults(formulaName, reference, productForm, primaryGoal, activeIngredients, excipients) {
-    // إخفاء العنصر النائب
+    // Hide placeholder and show results
     document.getElementById('resultsPlaceholder').style.display = 'none';
     const resultsContent = document.getElementById('resultsContent');
     resultsContent.style.display = 'block';
     
-    // تحديث معلومات الصيغة
-    document.getElementById('formulaNameDisplay').textContent = formulaName;
-    document.getElementById('designDate').textContent = new Date().toLocaleDateString('ar-SA');
+    // Scroll to results
+    resultsContent.scrollIntoView({ behavior: 'smooth' });
     
-    // تحديث الشارات
+    // Update formula information
+    document.getElementById('formulaNameDisplay').textContent = formulaName;
+    document.getElementById('designDate').textContent = new Date().toLocaleDateString();
+    
+    // Update reference badge
     const referenceBadge = document.getElementById('referenceBadge');
     referenceBadge.textContent = reference.toUpperCase();
     referenceBadge.className = `meta-badge reference ${reference}`;
     
+    // Update form badge
     const formBadge = document.getElementById('formBadge');
-    let formText = '';
-    switch(productForm) {
-        case 'tablet-uncoated': formText = 'قرص غير مغلف'; break;
-        case 'tablet-coated': formText = 'قرص مغلف'; break;
-        case 'capsule': formText = 'كبسولة'; break;
-        case 'syrup': formText = 'شراب'; break;
-        case 'powder': formText = 'مسحوق'; break;
-    }
-    formBadge.textContent = formText;
+    formBadge.textContent = getProductFormName(productForm);
     
-    // تحديث جدول المكونات
-    let tableRows = '';
+    // Update specifications reference
+    document.getElementById('specsReference').textContent = reference.toUpperCase();
+    document.getElementById('specificationsTable').className = `specifications-table ${reference}`;
     
-    // المواد الفعالة
+    // Update formula table
+    updateFormulaTable(activeIngredients, excipients, productForm, reference);
+    
+    // Calculate and display total cost
+    const totalCost = calculateTotalCost(activeIngredients, excipients, productForm);
+    document.getElementById('totalCost').textContent = totalCost;
+    
+    // Update quality specifications
+    updateQualitySpecifications(reference);
+    
+    // Update performance metrics
+    updatePerformanceMetrics(primaryGoal);
+    
+    // Render pie chart
+    renderPieChart(activeIngredients, excipients);
+    
+    showToast(
+        document.documentElement.dir === 'rtl' 
+            ? 'تم تصميم التركيبة بنجاح!'
+            : 'Formula designed successfully!',
+        'success'
+    );
+}
+
+function updateFormulaTable(activeIngredients, excipients, productForm, reference) {
+    const tbody = document.querySelector('#formulaTable tbody');
+    if (!tbody) return;
+    
+    let html = '';
+    const isRTL = document.documentElement.dir === 'rtl';
+    
+    // Active ingredients
     activeIngredients.forEach(ing => {
         const ingredientName = getIngredientDisplayName(ing.name);
-        tableRows += `
+        html += `
             <tr class="active-ingredient-row">
                 <td>${ingredientName}</td>
                 <td>${ing.amount} ${getUnitForProduct(productForm)}</td>
-                <td>مادة فعالة</td>
+                <td>${isRTL ? 'مادة فعالة' : 'Active Ingredient'}</td>
                 <td>${calculateIngredientCost(ing.name, ing.amount, productForm)}</td>
                 <td><span class="compliance-badge ${reference}">${reference.toUpperCase()}</span></td>
             </tr>
         `;
     });
     
-    // المواد المساعدة
+    // Excipients
     excipients.forEach(excipient => {
-        tableRows += `
+        html += `
             <tr>
                 <td>${excipient.displayName}</td>
                 <td>${excipient.percentage}%</td>
@@ -516,66 +722,33 @@ function displayResults(formulaName, reference, productForm, primaryGoal, active
         `;
     });
     
-    document.querySelector('#formulaTable tbody').innerHTML = tableRows;
-    
-    // حساب التكلفة الإجمالية
-    const totalCost = calculateTotalCost(activeIngredients, excipients, productForm);
-    document.getElementById('totalCost').textContent = totalCost;
-    
-    // تحديث مواصفات الجودة
-    updateQualitySpecifications(reference);
-    
-    // تحديث مقاييس الأداء
-    updatePerformanceMetrics(activeIngredients, excipients, primaryGoal);
-    
-    // رسم المخطط الدائري
-    renderPieChart(activeIngredients, excipients);
-    
-    // إضافة ملاحظة طريقة الإدخال
-    const inputMethodNote = currentInputMethod === 'manual' 
-        ? '✓ تم إدخال المواد يدوياً بواسطة المستخدم'
-        : '✓ تم اختيار المواد آلياً بواسطة الذكاء الاصطناعي';
-    
-    const noteElement = document.createElement('div');
-    noteElement.className = 'reference-info ' + reference;
-    noteElement.style.marginTop = '15px';
-    noteElement.style.padding = '10px';
-    noteElement.style.background = '#f8f9fa';
-    noteElement.style.borderRadius = '8px';
-    noteElement.innerHTML = `
-        <i class="fas fa-${currentInputMethod === 'manual' ? 'hand-pointer' : 'robot'}"></i>
-        <span>${inputMethodNote}</span>
-    `;
-    
-    const formulaDetails = document.querySelector('.formula-details');
-    if (!formulaDetails.querySelector('.input-method-note')) {
-        noteElement.classList.add('input-method-note');
-        formulaDetails.appendChild(noteElement);
-    }
-    
-    showToast('تم تصميم التركيبة بنجاح', 'success');
+    tbody.innerHTML = html;
 }
 
 // ===========================================
-// دوال مساعدة للحساب
+// Calculation Functions
 // ===========================================
 function getIngredientDisplayName(code) {
     const names = {
-        'paracetamol': 'باراسيتامول',
-        'ibuprofen': 'آيبوبروفين',
-        'amoxicillin': 'أموكسيسيلين',
-        'silver-iodide': 'يوديد الفضة',
-        'titanium-dioxide': 'ثاني أكسيد التيتانيوم',
-        'vitamin-c': 'فيتامين ج'
+        'paracetamol': { en: 'Paracetamol', ar: 'باراسيتامول' },
+        'ibuprofen': { en: 'Ibuprofen', ar: 'آيبوبروفين' },
+        'amoxicillin': { en: 'Amoxicillin', ar: 'أموكسيسيلين' },
+        'silver-iodide': { en: 'Silver Iodide', ar: 'يوديد الفضة' },
+        'titanium-dioxide': { en: 'Titanium Dioxide', ar: 'ثاني أكسيد التيتانيوم' },
+        'vitamin-c': { en: 'Vitamin C', ar: 'فيتامين ج' }
     };
-    return names[code] || code;
+    
+    const isRTL = document.documentElement.dir === 'rtl';
+    return names[code] ? (isRTL ? names[code].ar : names[code].en) : code;
 }
 
 function getUnitForProduct(productForm) {
-    if (productForm === 'syrup') return 'مل';
-    if (productForm.includes('tablet') || productForm === 'capsule') return 'مجم';
-    if (productForm === 'powder') return 'جرام';
-    return 'وحدة';
+    const isRTL = document.documentElement.dir === 'rtl';
+    
+    if (productForm === 'syrup') return isRTL ? 'مل' : 'ml';
+    if (productForm.includes('tablet') || productForm === 'capsule') return isRTL ? 'مجم' : 'mg';
+    if (productForm === 'powder') return isRTL ? 'جرام' : 'g';
+    return isRTL ? 'وحدة' : 'unit';
 }
 
 function calculateIngredientCost(name, amount, productForm) {
@@ -598,7 +771,9 @@ function calculateExcipientCost(name, type) {
         'filler': 0.04,
         'binder': 0.035,
         'disintegrant': 0.03,
-        'lubricant': 0.01
+        'lubricant': 0.01,
+        'sweetener': 0.02,
+        'preservative': 0.015
     };
     
     return '$' + (costs[type] || 0.03).toFixed(3);
@@ -607,7 +782,7 @@ function calculateExcipientCost(name, type) {
 function calculateTotalCost(activeIngredients, excipients, productForm) {
     let total = 0;
     
-    // تكلفة المواد الفعالة
+    // Active ingredients cost
     activeIngredients.forEach(ing => {
         const prices = {
             'paracetamol': 0.0005,
@@ -622,47 +797,78 @@ function calculateTotalCost(activeIngredients, excipients, productForm) {
         total += (prices[ing.name] || 0.0006) * ing.amount * unitMultiplier;
     });
     
-    // تكلفة المواد المساعدة
+    // Excipients cost
     excipients.forEach(excipient => {
         const costs = {
             'filler': 0.04,
             'binder': 0.035,
             'disintegrant': 0.03,
-            'lubricant': 0.01
+            'lubricant': 0.01,
+            'sweetener': 0.02,
+            'preservative': 0.015
         };
         
         total += (costs[excipient.function] || 0.03) * (excipient.percentage / 100) * 1000;
     });
     
-    return '$' + total.toFixed(2) + ' / لكل 1000 وحدة';
+    const isRTL = document.documentElement.dir === 'rtl';
+    return '$' + total.toFixed(2) + (isRTL ? ' / لكل 1000 وحدة' : ' / per 1000 units');
 }
 
 // ===========================================
-// مواصفات الجودة
+// Quality Specifications
 // ===========================================
 function updateQualitySpecifications(reference) {
     const specsBody = document.getElementById('specificationsBody');
-    const specsReference = document.getElementById('specificationsReference');
+    if (!specsBody) return;
     
-    specsReference.textContent = reference.toUpperCase();
-    document.getElementById('specificationsTable').className = `specifications-table ${reference}`;
+    const isRTL = document.documentElement.dir === 'rtl';
     
     const specifications = [
-        { test: 'الهوية', spec: 'يجب أن تطابق التركيبة المتطلبات', result: 'مطابق', status: 'success' },
-        { test: 'النقاوة', spec: '≥ 98.0%', result: '99.2%', status: 'success' },
-        { test: 'الذوبانية', spec: 'قابل للذوبان في الماء', result: 'ممتاز', status: 'success' },
-        { test: 'الثبات', spec: 'مستقر لمدة 24 شهر', result: 'مطابق', status: 'success' },
-        { test: 'المحتوى', spec: '95.0% - 105.0%', result: '102.3%', status: 'success' }
+        { 
+            test: isRTL ? 'الهوية' : 'Identity',
+            spec: isRTL ? 'يجب أن تطابق التركيبة المتطلبات' : 'Must match requirements',
+            result: isRTL ? 'مطابق' : 'Compliant',
+            status: 'success'
+        },
+        { 
+            test: isRTL ? 'النقاوة' : 'Purity',
+            spec: '≥ 98.0%',
+            result: '99.2%',
+            status: 'success'
+        },
+        { 
+            test: isRTL ? 'الذوبانية' : 'Solubility',
+            spec: isRTL ? 'قابل للذوبان في الماء' : 'Soluble in water',
+            result: isRTL ? 'ممتاز' : 'Excellent',
+            status: 'success'
+        },
+        { 
+            test: isRTL ? 'الثبات' : 'Stability',
+            spec: isRTL ? 'مستقر لمدة 24 شهر' : 'Stable for 24 months',
+            result: isRTL ? 'مطابق' : 'Compliant',
+            status: 'success'
+        },
+        { 
+            test: isRTL ? 'المحتوى' : 'Content',
+            spec: '95.0% - 105.0%',
+            result: '102.3%',
+            status: 'success'
+        }
     ];
     
     let html = '';
     specifications.forEach(spec => {
+        const statusText = spec.status === 'success' 
+            ? (isRTL ? 'مطابق' : 'Compliant')
+            : (isRTL ? 'غير مطابق' : 'Non-compliant');
+            
         html += `
             <tr>
                 <td>${spec.test}</td>
                 <td>${spec.spec}</td>
                 <td>${spec.result}</td>
-                <td><span class="status ${spec.status}">${spec.status === 'success' ? 'مطابق' : 'غير مطابق'}</span></td>
+                <td><span class="status ${spec.status}">${statusText}</span></td>
             </tr>
         `;
     });
@@ -671,16 +877,39 @@ function updateQualitySpecifications(reference) {
 }
 
 // ===========================================
-// مقاييس الأداء
+// Performance Metrics
 // ===========================================
-function updatePerformanceMetrics(activeIngredients, excipients, primaryGoal) {
+function updatePerformanceMetrics(primaryGoal) {
     const performanceMetrics = document.getElementById('performanceMetrics');
+    if (!performanceMetrics) return;
+    
+    const isRTL = document.documentElement.dir === 'rtl';
     
     const metrics = [
-        { name: 'فعالية التكلفة', icon: 'fa-money-bill-wave', value: 'عالية', color: '#27ae60' },
-        { name: 'استقرار التركيبة', icon: 'fa-shield-alt', value: 'ممتاز', color: '#3498db' },
-        { name: 'سرعة الإنتاج', icon: 'fa-tachometer-alt', value: 'سريع', color: '#9b59b6' },
-        { name: 'توافق البيئة', icon: 'fa-leaf', value: 'جيد', color: '#2ecc71' }
+        { 
+            name: isRTL ? 'فعالية التكلفة' : 'Cost Effectiveness',
+            icon: 'fa-money-bill-wave',
+            value: '92%',
+            color: '#27ae60'
+        },
+        { 
+            name: isRTL ? 'استقرار التركيبة' : 'Formulation Stability',
+            icon: 'fa-shield-alt',
+            value: isRTL ? 'ممتاز' : 'Excellent',
+            color: '#3498db'
+        },
+        { 
+            name: isRTL ? 'سرعة الإنتاج' : 'Production Speed',
+            icon: 'fa-tachometer-alt',
+            value: isRTL ? 'سريع' : 'Fast',
+            color: '#9b59b6'
+        },
+        { 
+            name: isRTL ? 'توافق البيئة' : 'Environmental Compatibility',
+            icon: 'fa-leaf',
+            value: isRTL ? 'جيد' : 'Good',
+            color: '#2ecc71'
+        }
     ];
     
     let html = '';
@@ -697,7 +926,7 @@ function updatePerformanceMetrics(activeIngredients, excipients, primaryGoal) {
 }
 
 // ===========================================
-// المخطط الدائري
+// Pie Chart
 // ===========================================
 function renderPieChart(activeIngredients, excipients) {
     const canvas = document.getElementById('formulaChart');
@@ -705,28 +934,40 @@ function renderPieChart(activeIngredients, excipients) {
     
     const ctx = canvas.getContext('2d');
     
-    // تحضير البيانات
+    // Prepare data
     const labels = [];
     const data = [];
     const backgroundColors = [
         '#2ecc71', '#3498db', '#9b59b6', '#e74c3c',
-        '#f1c40f', '#1abc9c', '#e67e22', '#34495e'
+        '#f1c40f', '#1abc9c', '#e67e22', '#34495e',
+        '#16a085', '#8e44ad', '#2c3e50', '#f39c12'
     ];
     
-    // إضافة المواد الفعالة
+    // Add active ingredients
     activeIngredients.forEach((ing, index) => {
         labels.push(getIngredientDisplayName(ing.name));
         data.push(ing.amount);
     });
     
-    // إضافة المواد المساعدة
+    // Add excipients
     excipients.forEach((ex, index) => {
         labels.push(ex.displayName);
         data.push(ex.percentage);
     });
     
-    // إنشاء المخطط
-    new Chart(ctx, {
+    // Check if Chart is available
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js library not loaded');
+        return;
+    }
+    
+    // Destroy existing chart if exists
+    if (canvas.chart) {
+        canvas.chart.destroy();
+    }
+    
+    // Create new chart
+    canvas.chart = new Chart(ctx, {
         type: 'pie',
         data: {
             labels: labels,
@@ -739,24 +980,26 @@ function renderPieChart(activeIngredients, excipients) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
             plugins: {
                 legend: {
                     position: 'bottom',
-                    rtl: true,
+                    rtl: document.documentElement.dir === 'rtl',
                     labels: {
                         font: {
                             size: 11,
-                            family: 'Segoe UI'
+                            family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
                         },
                         padding: 20
                     }
                 },
                 title: {
                     display: true,
-                    text: 'توزيع مكونات التركيبة',
+                    text: document.documentElement.dir === 'rtl' ? 'توزيع مكونات التركيبة' : 'Formulation Components Distribution',
                     font: {
                         size: 16
-                    }
+                    },
+                    padding: 20
                 }
             }
         }
@@ -764,23 +1007,51 @@ function renderPieChart(activeIngredients, excipients) {
 }
 
 // ===========================================
-// تصدير النتائج
+// Export Functions
 // ===========================================
 function exportResults() {
     if (typeof html2pdf === 'undefined') {
-        showToast('يجب تحميل مكتبة html2pdf أولاً', 'error');
+        showToast(
+            document.documentElement.dir === 'rtl' 
+                ? 'مكتبة html2pdf غير محملة'
+                : 'html2pdf library not loaded',
+            'error'
+        );
         return;
     }
     
     const element = document.getElementById('resultsContent');
+    if (!element) {
+        showToast('Results content not found', 'error');
+        return;
+    }
     
-    html2pdf().from(element).set({
+    const isRTL = document.documentElement.dir === 'rtl';
+    const fileName = isRTL ? 'تقرير_التركيبة_الكيميائية.pdf' : 'Chemical_Formula_Report.pdf';
+    
+    const opt = {
         margin: [10, 10, 10, 10],
-        filename: 'تركيبة_كيميائية.pdf',
+        filename: fileName,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, logging: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    }).save();
+        html2canvas: { 
+            scale: 2,
+            useCORS: true,
+            logging: false
+        },
+        jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait',
+            compress: true
+        }
+    };
+    
+    html2pdf().set(opt).from(element).save();
+    
+    showToast(
+        isRTL ? 'تم تصدير التقرير بنجاح' : 'Report exported successfully',
+        'success'
+    );
 }
 
 function saveFormula() {
@@ -788,40 +1059,38 @@ function saveFormula() {
         name: document.getElementById('formulaNameDisplay').textContent,
         date: document.getElementById('designDate').textContent,
         reference: document.getElementById('referenceBadge').textContent,
-        cost: document.getElementById('totalCost').textContent
+        form: document.getElementById('formBadge').textContent,
+        cost: document.getElementById('totalCost').textContent,
+        timestamp: new Date().toISOString()
     };
     
     localStorage.setItem('lastFormula', JSON.stringify(formulaData));
-    showToast('تم حفظ التركيبة محلياً', 'success');
+    
+    const isRTL = document.documentElement.dir === 'rtl';
+    showToast(
+        isRTL ? 'تم حفظ التركيبة محلياً' : 'Formula saved locally',
+        'success'
+    );
 }
 
 // ===========================================
-// أحداث إضافية
+// Print Function
 // ===========================================
-document.addEventListener('DOMContentLoaded', function() {
-    // تحديث المقترحات الآلية عند تغيير الإعدادات
-    const autoSettings = ['costStrategy', 'productionStrategy', 'performancePriority'];
-    autoSettings.forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.addEventListener('change', updateAutoSuggestions);
-        }
-    });
-    
-    // اختيار المادة المخصصة
-    const excipientName = document.getElementById('excipientName');
-    if (excipientName) {
-        excipientName.addEventListener('change', function() {
-            const customNameField = document.getElementById('customExcipientName');
-            const customNameLabel = document.getElementById('customNameLabel');
-            
-            if (this.value === 'custom') {
-                customNameField.style.display = 'block';
-                customNameLabel.style.display = 'block';
-            } else {
-                customNameField.style.display = 'none';
-                customNameLabel.style.display = 'none';
-            }
-        });
-    }
-});
+function printResults() {
+    window.print();
+}
+
+// ===========================================
+// Global Functions for HTML onclick
+// ===========================================
+window.selectInputMethod = selectInputMethod;
+window.addIngredientRow = addIngredientRow;
+window.removeIngredientRow = removeIngredientRow;
+window.addManualExcipient = addManualExcipient;
+window.removeManualExcipient = removeManualExcipient;
+window.clearManualExcipients = clearManualExcipients;
+window.loadCommonFormulation = loadCommonFormulation;
+window.regenerateAutoSuggestions = regenerateAutoSuggestions;
+window.exportResults = exportResults;
+window.saveFormula = saveFormula;
+window.printResults = printResults;
