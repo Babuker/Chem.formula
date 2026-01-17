@@ -3,98 +3,74 @@
 // ===========================================
 
 // ===========================================
-// تعريف المتغيرات العامة
+// المتغيرات العامة
 // ===========================================
-
 let manualExcipients = [];
 let currentInputMethod = 'auto';
 let currentReference = 'bp';
 let currentProductForm = '';
-let activeIngredientsCount = 1;
 let currentFormulaData = null;
 
 // ===========================================
-// دوال مساعدة عامة
+// أدوات مساعدة
 // ===========================================
-
-/**
- * إظهار إشعار للمستخدم
- */
 function showToast(message, type = 'info', duration = 3000) {
-    // إنشاء العنصر
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.innerHTML = `
-        <i class="fas fa-${getToastIcon(type)}"></i>
-        <span>${message}</span>
-    `;
-    
-    // إضافة للصفحة
+    toast.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
     document.body.appendChild(toast);
-    
-    // إظهار مع تأثير
-    setTimeout(() => toast.classList.add('show'), 10);
-    
-    // إخفاء بعد المدة المحددة
+
+    setTimeout(() => toast.classList.add('show'), 50);
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 300);
     }, duration);
 }
 
-function getToastIcon(type) {
-    const icons = {
-        'success': 'check-circle',
-        'error': 'exclamation-circle',
-        'warning': 'exclamation-triangle',
-        'info': 'info-circle'
-    };
-    return icons[type] || 'info-circle';
-}
-
-/**
- * تنسيق الأرقام مع فواصل
- */
-function formatNumber(num, decimals = 2) {
-    return parseFloat(num).toFixed(decimals).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+function format(num, d = 2) {
+    return Number(num).toFixed(d);
 }
 
 // ===========================================
-// معالجة المواد الفعالة
+// التهيئة عند تحميل الصفحة
 // ===========================================
+document.addEventListener('DOMContentLoaded', () => {
+    selectInputMethod('auto');
 
-function getActiveIngredients() {
-    const activeIngredients = [];
-    document.querySelectorAll('.ingredient-row').forEach((row, index) => {
-        const name = row.querySelector('.active-ingredient').value;
-        const amount = row.querySelector('.active-ingredient-amount').value;
-        const unit = row.querySelector('.unit').textContent;
-        
-        if (name && amount && parseFloat(amount) > 0) {
-            activeIngredients.push({
-                id: Date.now() + index,
-                name: name,
-                displayName: row.querySelector('.active-ingredient option:checked').text.split('(')[0].trim(),
-                amount: parseFloat(amount),
-                unit: unit,
-                technicalName: row.querySelector('.active-ingredient option:checked').text
-            });
-        }
+    // المرجعية
+    document.querySelectorAll('.reference-badge').forEach(badge => {
+        badge.addEventListener('click', () => {
+            document.querySelectorAll('.reference-badge').forEach(b => b.classList.remove('active'));
+            badge.classList.add('active');
+            currentReference = badge.dataset.reference;
+            document.getElementById('reference').value = currentReference;
+        });
     });
-    return activeIngredients;
-}
 
+    // شكل المنتج
+    document.querySelectorAll('.product-form-option').forEach(option => {
+        option.addEventListener('click', () => {
+            document.querySelectorAll('.product-form-option').forEach(o => o.classList.remove('active'));
+            option.classList.add('active');
+            currentProductForm = option.dataset.form;
+            document.getElementById('productForm').value = currentProductForm;
+            updateUnits();
+        });
+    });
+
+    // الميزانية
+    const budget = document.getElementById('budget');
+    const budgetValue = document.getElementById('budgetValue');
+    budgetValue.textContent = budget.value;
+    budget.addEventListener('input', () => budgetValue.textContent = budget.value);
+});
+
+// ===========================================
+// المواد الفعالة
+// ===========================================
 function addIngredientRow() {
     const container = document.getElementById('activeIngredientsContainer');
-    const rowCount = document.querySelectorAll('.ingredient-row').length;
-    
-    let unit = 'مجم';
-    if (currentProductForm === 'syrup') {
-        unit = 'ملجم/مل';
-    } else if (currentProductForm === 'powder') {
-        unit = 'جرام';
-    }
-    
+
     const row = document.createElement('div');
     row.className = 'ingredient-row';
     row.innerHTML = `
@@ -103,12 +79,120 @@ function addIngredientRow() {
             <option value="paracetamol">باراسيتامول (Paracetamol)</option>
             <option value="ibuprofen">آيبوبروفين (Ibuprofen)</option>
             <option value="amoxicillin">أموكسيسيلين (Amoxicillin)</option>
-            <option value="silver-iodide">يوديد الفضة (Silver Iodide)</option>
-            <option value="titanium-dioxide">ثاني أكسيد التيتانيوم (TiO₂)</option>
-            <option value="sodium-hypochlorite">هيبوكلوريت الصوديوم (NaClO)</option>
-            <option value="vitamin-c">فيتامين ج (Ascorbic Acid)</option>
-            <option value="custom">مادة مخصصة...</option>
+            <option value="silver-iodide">يوديد الفضة</option>
+            <option value="titanium-dioxide">ثاني أكسيد التيتانيوم</option>
+            <option value="vitamin-c">فيتامين ج</option>
         </select>
-        
+
         <div class="input-with-unit">
-            <input type="number" class="active-ingredient-amount" min="0.1" max="10000" step="0.1" placeholder
+            <input type="number" class="active-ingredient-amount" min="0.1" step="0.1" required>
+            <div class="unit" id="unitLabel">مجم</div>
+        </div>
+
+        <button type="button" class="remove-ingredient" onclick="removeIngredientRow(this)">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    container.appendChild(row);
+}
+
+function removeIngredientRow(btn) {
+    const rows = document.querySelectorAll('.ingredient-row');
+    if (rows.length > 1) {
+        btn.closest('.ingredient-row').remove();
+    }
+}
+
+function getActiveIngredients() {
+    const list = [];
+    document.querySelectorAll('.ingredient-row').forEach(row => {
+        const name = row.querySelector('.active-ingredient').value;
+        const amount = row.querySelector('.active-ingredient-amount').value;
+        if (name && amount) {
+            list.push({ name, amount: parseFloat(amount) });
+        }
+    });
+    return list;
+}
+
+// ===========================================
+// طريقة الإدخال
+// ===========================================
+function selectInputMethod(method) {
+    currentInputMethod = method;
+    document.getElementById('inputMethod').value = method;
+
+    document.getElementById('manualInputSection').style.display = method === 'manual' ? 'block' : 'none';
+    document.getElementById('autoInputSection').style.display = method === 'auto' ? 'block' : 'none';
+
+    document.getElementById('manualOption').classList.toggle('selected', method === 'manual');
+    document.getElementById('autoOption').classList.toggle('selected', method === 'auto');
+}
+
+// ===========================================
+// المواد المساعدة (يدوي)
+// ===========================================
+function addManualExcipient() {
+    const nameSel = document.getElementById('excipientName');
+    const funcSel = document.getElementById('excipientFunction');
+    const perc = parseFloat(document.getElementById('excipientPercentage').value);
+
+    if (!nameSel.value || !perc) {
+        showToast('يرجى إدخال جميع البيانات', 'warning');
+        return;
+    }
+
+    manualExcipients.push({
+        id: Date.now(),
+        name: nameSel.value,
+        displayName: nameSel.options[nameSel.selectedIndex].text,
+        function: funcSel.value,
+        functionText: funcSel.options[funcSel.selectedIndex].text,
+        percentage: perc
+    });
+
+    updateManualList();
+}
+
+function updateManualList() {
+    const list = document.getElementById('manualExcipientsList');
+    const count = document.getElementById('manualExcipientsCount');
+    list.innerHTML = '';
+
+    if (manualExcipients.length === 0) {
+        list.innerHTML = `<div class="empty-list"><i class="fas fa-inbox"></i><p>لا توجد مواد</p></div>`;
+        count.textContent = '(0 مادة)';
+        return;
+    }
+
+    manualExcipients.forEach(e => {
+        list.innerHTML += `
+            <div class="manual-excipient-item">
+                <strong>${e.displayName}</strong>
+                <span>${e.percentage}% - ${e.functionText}</span>
+                <button onclick="removeManualExcipient(${e.id})">×</button>
+            </div>
+        `;
+    });
+
+    count.textContent = `(${manualExcipients.length} مادة)`;
+}
+
+function removeManualExcipient(id) {
+    manualExcipients = manualExcipients.filter(e => e.id !== id);
+    updateManualList();
+}
+
+function clearManualExcipients() {
+    manualExcipients = [];
+    updateManualList();
+}
+
+// ===========================================
+// المواد المساعدة (آلي)
+// ===========================================
+function generateAutoExcipients() {
+    if (currentProductForm.includes('tablet')) {
+        return [
+            { displayName: 'MCC', functionText: 'مادة مالئة', percentage: 30 },
+            { displayName: 'Povidone', functionText: 'رابطة',
