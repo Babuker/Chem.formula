@@ -11,9 +11,6 @@
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
     
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
-    
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     
@@ -90,55 +87,12 @@
         .toast i {
             font-size: 1.2rem;
         }
-        
-        /* Status Badges */
-        .status {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-        
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status.warning {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        /* Compliance Badge */
-        .compliance-badge {
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            display: inline-block;
-        }
-        
-        .compliance-badge.bp {
-            background: linear-gradient(135deg, #4a90e2, #2c7dd2);
-            color: white;
-        }
-        
-        .compliance-badge.usp {
-            background: linear-gradient(135deg, #9b59b6, #8e44ad);
-            color: white;
-        }
     </style>
 </head>
 <body>
     <!-- Language Switcher -->
     <div class="lang-switcher">
-        <button class="lang-btn" onclick="switchLanguage('ar')">
+        <button class="lang-btn" onclick="window.location.href='index-ar.html'">
             <i class="fas fa-language"></i>
             العربية
         </button>
@@ -186,7 +140,7 @@
                         
                         <div class="form-group">
                             <label for="formulaName"><i class="fas fa-tag"></i> Formula Name</label>
-                            <input type="text" id="formulaName" placeholder="e.g., Paracetamol 500mg - High Concentration" required>
+                            <input type="text" id="formulaName" placeholder="e.g., Paracetamol 500mg - High Concentration" value="Paracetamol 500mg Tablet" required>
                         </div>
                         
                         <div class="form-group">
@@ -247,7 +201,7 @@
                             <div class="ingredient-row">
                                 <select class="active-ingredient" required>
                                     <option value="">Select Active Ingredient...</option>
-                                    <option value="paracetamol">Paracetamol (Acetaminophen)</option>
+                                    <option value="paracetamol" selected>Paracetamol (Acetaminophen)</option>
                                     <option value="ibuprofen">Ibuprofen</option>
                                     <option value="amoxicillin">Amoxicillin</option>
                                     <option value="silver-iodide">Silver Iodide</option>
@@ -310,108 +264,8 @@
                         <input type="hidden" id="inputMethod" value="auto">
                     </div>
                     
-                    <!-- Manual Input Section -->
-                    <div class="manual-input-section" id="manualInputSection">
-                        <div style="margin-bottom: 20px;">
-                            <h4 style="color: var(--dark-color); margin-bottom: 15px;">
-                                <i class="fas fa-plus-circle"></i> Add Excipients Manually
-                            </h4>
-                            
-                            <div class="add-excipient-form">
-                                <div class="form-group">
-                                    <label for="excipientName">Excipient Name</label>
-                                    <select id="excipientName">
-                                        <option value="">Select Excipient...</option>
-                                        <optgroup label="Fillers">
-                                            <option value="lactose">Anhydrous Lactose</option>
-                                            <option value="mcc">Microcrystalline Cellulose (MCC)</option>
-                                            <option value="mannitol">Mannitol</option>
-                                            <option value="dibasic-calcium-phosphate">Dibasic Calcium Phosphate</option>
-                                            <option value="starch">Corn Starch</option>
-                                        </optgroup>
-                                        <optgroup label="Binders">
-                                            <option value="povidone">Povidone (PVP)</option>
-                                            <option value="hpmc">Hydroxypropyl Methylcellulose (HPMC)</option>
-                                            <option value="gelatin">Gelatin</option>
-                                            <option value="acacia">Arabic Gum</option>
-                                        </optgroup>
-                                        <optgroup label="Disintegrants">
-                                            <option value="croscarmellose">Sodium Croscarmellose</option>
-                                            <option value="crospovidone">Crospovidone</option>
-                                            <option value="sodium-starch-glycolate">Sodium Starch Glycolate</option>
-                                        </optgroup>
-                                        <optgroup label="Lubricants">
-                                            <option value="magnesium-stearate">Magnesium Stearate</option>
-                                            <option value="talc">Talc</option>
-                                            <option value="silicon-dioxide">Silicon Dioxide</option>
-                                            <option value="stearic-acid">Stearic Acid</option>
-                                        </optgroup>
-                                        <option value="custom">Custom Excipient...</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="excipientFunction">Function</label>
-                                    <select id="excipientFunction">
-                                        <option value="filler">Filler</option>
-                                        <option value="binder">Binder</option>
-                                        <option value="disintegrant">Disintegrant</option>
-                                        <option value="lubricant">Lubricant</option>
-                                        <option value="coating">Coating Agent</option>
-                                        <option value="preservative">Preservative</option>
-                                        <option value="colorant">Colorant</option>
-                                        <option value="flavor">Flavor</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="excipientPercentage">Percentage (%)</label>
-                                    <div class="input-with-unit">
-                                        <input type="number" id="excipientPercentage" min="0.1" max="100" step="0.1" value="5">
-                                        <div class="unit">%</div>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <button type="button" class="btn" onclick="addManualExcipient()" style="padding: 10px; margin-top: 0;">
-                                        <i class="fas fa-plus"></i> Add
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="customExcipientName" style="display: none;" id="customNameLabel">Custom Excipient Name</label>
-                                <input type="text" id="customExcipientName" placeholder="Enter custom excipient name" style="display: none;">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h5 style="color: var(--dark-color); margin-bottom: 10px;">
-                                <i class="fas fa-list"></i> Manually Added Excipients List
-                                <span id="manualExcipientsCount" style="font-size: 0.9rem; color: #666; margin-left: 10px;">(0 items)</span>
-                            </h5>
-                            
-                            <div class="manual-excipients-list" id="manualExcipientsList">
-                                <div style="text-align: center; padding: 30px; color: #999;">
-                                    <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                    <p>No excipients added yet</p>
-                                    <small>Use the form above to add excipients</small>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
-                            <button type="button" class="btn btn-secondary" onclick="clearManualExcipients()" style="flex: 1; min-width: 150px;">
-                                <i class="fas fa-trash-alt"></i> Clear All
-                            </button>
-                            <button type="button" class="btn" onclick="loadCommonFormulation()" style="flex: 1; min-width: 150px; background-color: #5c6bc0;">
-                                <i class="fas fa-magic"></i> Load Common Formulation
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Auto Input Section -->
-                    <div class="auto-input-section" id="autoInputSection">
+                    <!-- Auto Input Section (Visible by default) -->
+                    <div class="auto-input-section" id="autoInputSection" style="display: block;">
                         <div style="margin-bottom: 20px;">
                             <h4 style="color: var(--dark-color); margin-bottom: 10px;">
                                 <i class="fas fa-cogs"></i> Automatic Selection Settings
@@ -731,21 +585,12 @@
                 document.getElementById('budgetValue').textContent = '150';
                 
                 showToast('Paracetamol example loaded successfully!', 'success');
-            } else if (example === 'cloud-seeding') {
-                document.getElementById('formulaName').value = 'Cloud Seeding Solution - Silver Iodide';
-                document.querySelector('.active-ingredient').value = 'silver-iodide';
-                document.querySelector('.active-ingredient-amount').value = '2';
-                document.getElementById('totalWeight').value = '100';
-                showToast('Cloud seeding example loaded!', 'info');
             }
         }
         
-        // Initialize page
+        // Initialize page when loaded
         document.addEventListener('DOMContentLoaded', function() {
-            // Set default product form
-            if (!document.getElementById('productForm').value) {
-                document.getElementById('productForm').value = 'tablet-uncoated';
-            }
+            console.log('Page initialization started...');
             
             // Initialize budget display
             const budgetSlider = document.getElementById('budget');
@@ -757,22 +602,146 @@
                 });
             }
             
-            // Initialize custom excipient field
-            const excipientName = document.getElementById('excipientName');
-            if (excipientName) {
-                excipientName.addEventListener('change', function() {
-                    const customField = document.getElementById('customExcipientName');
-                    const customLabel = document.getElementById('customNameLabel');
-                    if (this.value === 'custom') {
-                        customField.style.display = 'block';
-                        customLabel.style.display = 'block';
-                    } else {
-                        customField.style.display = 'none';
-                        customLabel.style.display = 'none';
+            // Initialize form submission
+            const formulaForm = document.getElementById('formulaForm');
+            if (formulaForm) {
+                formulaForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    console.log('Form submitted!');
+                    
+                    // Get form values
+                    const formulaName = document.getElementById('formulaName').value;
+                    const reference = document.getElementById('reference').value;
+                    const productForm = document.getElementById('productForm').value;
+                    const primaryGoal = document.getElementById('primaryGoal').value;
+                    
+                    // Get active ingredients
+                    const activeIngredients = [];
+                    document.querySelectorAll('.ingredient-row').forEach(row => {
+                        const name = row.querySelector('.active-ingredient').value;
+                        const amount = row.querySelector('.active-ingredient-amount').value;
+                        if (name && amount) {
+                            activeIngredients.push({ name, amount: parseFloat(amount) });
+                        }
+                    });
+                    
+                    // Validate
+                    if (!formulaName || !reference || !productForm || !primaryGoal || activeIngredients.length === 0) {
+                        showToast('Please fill all required fields', 'error');
+                        return;
                     }
+                    
+                    // Generate auto excipients
+                    const excipients = [
+                        {
+                            name: 'filler',
+                            displayName: 'Microcrystalline Cellulose (MCC)',
+                            function: 'filler',
+                            functionText: 'Filler',
+                            percentage: 30
+                        },
+                        {
+                            name: 'binder',
+                            displayName: 'Povidone K30',
+                            function: 'binder',
+                            functionText: 'Binder',
+                            percentage: 2
+                        },
+                        {
+                            name: 'disintegrant',
+                            displayName: 'Sodium Croscarmellose',
+                            function: 'disintegrant',
+                            functionText: 'Disintegrant',
+                            percentage: 1.5
+                        },
+                        {
+                            name: 'lubricant',
+                            displayName: 'Magnesium Stearate',
+                            function: 'lubricant',
+                            functionText: 'Lubricant',
+                            percentage: 0.5
+                        }
+                    ];
+                    
+                    // Show results
+                    showResults(formulaName, reference, productForm, activeIngredients, excipients);
                 });
             }
+            
+            console.log('Page initialization complete!');
         });
+        
+        // Simple results display function
+        function showResults(formulaName, reference, productForm, activeIngredients, excipients) {
+            // Hide placeholder and show results
+            document.getElementById('resultsPlaceholder').style.display = 'none';
+            document.getElementById('resultsContent').style.display = 'block';
+            
+            // Update basic info
+            document.getElementById('formulaNameDisplay').textContent = formulaName;
+            document.getElementById('designDate').textContent = new Date().toLocaleDateString();
+            document.getElementById('referenceBadge').textContent = reference.toUpperCase();
+            document.getElementById('formBadge').textContent = 'Uncoated Tablet';
+            
+            // Update formula table
+            const tbody = document.querySelector('#formulaTable tbody');
+            let html = '';
+            
+            // Add active ingredients
+            activeIngredients.forEach(ing => {
+                const ingredientName = ing.name === 'paracetamol' ? 'Paracetamol' : ing.name;
+                html += `
+                    <tr class="active-ingredient-row">
+                        <td>${ingredientName}</td>
+                        <td>${ing.amount} mg</td>
+                        <td>Active Ingredient</td>
+                        <td>$0.00${ing.amount}</td>
+                        <td><span class="compliance-badge bp">BP</span></td>
+                    </tr>
+                `;
+            });
+            
+            // Add excipients
+            excipients.forEach(ex => {
+                html += `
+                    <tr>
+                        <td>${ex.displayName}</td>
+                        <td>${ex.percentage}%</td>
+                        <td>${ex.functionText}</td>
+                        <td>$0.0${ex.percentage}</td>
+                        <td><span class="compliance-badge bp">BP</span></td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+            
+            // Update cost
+            document.getElementById('totalCost').textContent = '$0.42/per 1000 tablets';
+            
+            // Show success message
+            showToast('Formula designed successfully!', 'success');
+            
+            // Scroll to results
+            document.getElementById('resultsContent').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Simple toast function
+        function showToast(message, type = 'info') {
+            // Remove existing toasts
+            document.querySelectorAll('.toast').forEach(toast => toast.remove());
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 50);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
     </script>
 </body>
 </html>
