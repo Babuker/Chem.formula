@@ -196,3 +196,29 @@ function generateAutoExcipients() {
         return [
             { displayName: 'MCC', functionText: 'مادة مالئة', percentage: 30 },
             { displayName: 'Povidone', functionText: 'رابطة',
+function validateTotalPercentage(items) {
+  const total = items.reduce((s, i) => s + i.percentage, 0);
+  return Math.round(total * 100) / 100;
+}
+if (validateTotalPercentage(excipients) !== 100) {
+  showToast("Total percentage must equal 100%", "error");
+  return;
+}
+function renderPieChart(data) {
+  new Chart(document.getElementById("formulaChart"), {
+    type: "pie",
+    data: {
+      labels: data.map(d => d.name),
+      datasets: [{
+        data: data.map(d => d.percentage)
+      }]
+    }
+  });
+}
+function exportResults() {
+  html2pdf().from(document.getElementById("resultsContent")).set({
+    filename: "Chemical_Formula_Report_v1.0.pdf",
+    html2canvas: { scale: 2 },
+    jsPDF: { format: "a4" }
+  }).save();
+}
