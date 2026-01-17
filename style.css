@@ -1,43 +1,7 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-  margin: 0;
-}
-
-header, footer {
-  background: #0b3c5d;
-  color: white;
-  padding: 1rem;
-  text-align: center;
-}
-
-main {
-  max-width: 900px;
-  margin: auto;
-  padding: 1rem;
-}
-
-.card {
-  background: white;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 6px;
-}
-
-input, button {
-  width: 100%;
-  padding: 0.5rem;
-  margin-top: 0.5rem;
-}
-
-table {
-  width: 100%;
-}
-
-.ok {
-  color: green;
-}
-
-.error {
-  color: red;
-}
+body { font-family: Arial; background:#f4f6f8; margin:0 }
+header,footer { background:#0b3c5d; color:white; padding:1rem; text-align:center }
+main { max-width:900px; margin:auto; padding:1rem }
+.card { background:white; padding:1rem; margin-bottom:1rem; border-radius:6px }
+input,button { width:100%; margin-top:.5rem; padding:.5rem }
+table { width:100%; margin-top:.5rem }
+.lang button { margin:.2rem }
