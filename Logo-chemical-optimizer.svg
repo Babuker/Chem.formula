@@ -1,0 +1,12 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Test Tube with Optimizing Arrow -->
+  <path d="M80,40 L120,40 L130,160 L70,160 Z" fill="#1976d2" fill-opacity="0.2" stroke="#1976d2" stroke-width="3"/>
+  
+  <!-- Chemical Structure Inside -->
+  <circle cx="100" cy="80" r="15" fill="none" stroke="#4caf50" stroke-width="2"/>
+  <circle cx="100" cy="120" r="15" fill="none" stroke="#4caf50" stroke-width="2"/>
+  
+  <!-- Optimization Arrows -->
+  <path d="M100 50 L100 30 L95 35 L100 30 L105 35 Z" fill="#4caf50"/>
+  <path d="M100 150 L100 170 L95 165 L100 170 L105 165 Z" fill="#4caf50"/>
+</svg>
