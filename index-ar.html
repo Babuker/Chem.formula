@@ -3,33 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مُحسّن التركيبة الكيميائية - تصميم تركيبة اقتصادية</title>
+    <title>برنامج تصميم التركيبة الكيميائية المثالية الاقتصادية</title>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- CSS Files -->
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="lang-ar.css">
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+    <style>
+        /* إضافات ضرورية */
+        .empty-list {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+        .empty-list i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        .total-percentage {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .total-row {
+            background: #f8f9fa;
+            font-weight: 700;
+        }
+    </style>
 </head>
-<body class="lang-ar">
+<body>
     <!-- Header -->
     <header>
         <div class="container">
             <div class="header-content">
                 <div class="logo">
                     <i class="fas fa-atom"></i>
-                    <div>
-                        <h1>مُحسّن التركيبة الكيميائية</h1>
+                    <div class="logo-text">
+                        <h1>برنامج تصميم التركيبة الكيميائية</h1>
                         <p>التوازن الأمثل بين الأداء والتكلفة باستخدام الذكاء الاصطناعي</p>
                     </div>
                 </div>
                 <nav>
                     <ul>
-                        <li><a href="#" onclick="switchLanguage('en')"><i class="fas fa-language"></i> English</a></li>
                         <li><a href="#"><i class="fas fa-home"></i> الرئيسية</a></li>
                         <li><a href="#"><i class="fas fa-book"></i> التوثيق</a></li>
                         <li><a href="#"><i class="fas fa-database"></i> قاعدة البيانات</a></li>
@@ -63,13 +94,13 @@
                         </div>
                         
                         <div class="form-group">
-                            <label><i class="fas fa-book-medical"></i> المرجعية (الدستور الدوائي)</label>
+                            <label><i class="fas fa-book-medical"></i> المرجعية (Pharmacopeia)</label>
                             <div class="reference-badges">
                                 <div class="reference-badge bp active" data-reference="bp">
-                                    <i class="fas fa-flag-uk"></i> الدستور البريطاني (BP)
+                                    <i class="fas fa-flag-uk"></i> British Pharmacopoeia (BP)
                                 </div>
                                 <div class="reference-badge usp" data-reference="usp">
-                                    <i class="fas fa-flag-usa"></i> الدستور الأمريكي (USP)
+                                    <i class="fas fa-flag-usa"></i> United States Pharmacopeia (USP)
                                 </div>
                             </div>
                             <input type="hidden" id="reference" value="bp" required>
@@ -81,27 +112,27 @@
                                 <div class="product-form-option" data-form="tablet-uncoated">
                                     <i class="fas fa-tablet-alt"></i>
                                     <div>قرص غير مغلف</div>
-                                    <small>تحرر فوري</small>
+                                    <small>Uncoated Tablet</small>
                                 </div>
                                 <div class="product-form-option" data-form="tablet-coated">
                                     <i class="fas fa-tablet-alt"></i>
                                     <div>قرص مغلف</div>
-                                    <small>معوي/مغلف بالسكر</small>
+                                    <small>Coated Tablet</small>
                                 </div>
                                 <div class="product-form-option" data-form="capsule">
                                     <i class="fas fa-capsules"></i>
                                     <div>كبسولة</div>
-                                    <small>جيلاتين صلب/طري</small>
+                                    <small>Capsule</small>
                                 </div>
                                 <div class="product-form-option" data-form="syrup">
                                     <i class="fas fa-wine-bottle"></i>
                                     <div>شراب</div>
-                                    <small>سائل فموي</small>
+                                    <small>Syrup</small>
                                 </div>
                                 <div class="product-form-option" data-form="powder">
                                     <i class="fas fa-mortar-pestle"></i>
                                     <div>مسحوق</div>
-                                    <small>للمعلقات</small>
+                                    <small>Powder</small>
                                 </div>
                             </div>
                             <input type="hidden" id="productForm" value="" required>
@@ -112,7 +143,7 @@
                     <div class="active-ingredient-section">
                         <div class="section-title" style="border: none; padding: 0; margin: 0 0 15px 0;">
                             <i class="fas fa-vial"></i>
-                            <h3 style="font-size: 1.2rem;">المواد الفعالة</h3>
+                            <h3 style="font-size: 1.2rem;">المادة/المواد الفعالة</h3>
                         </div>
                         
                         <div id="activeIngredientsContainer">
@@ -120,13 +151,13 @@
                             <div class="ingredient-row">
                                 <select class="active-ingredient" required>
                                     <option value="">اختر المادة الفعالة...</option>
-                                    <option value="paracetamol">باراسيتامول</option>
-                                    <option value="ibuprofen">آيبوبروفين</option>
-                                    <option value="amoxicillin">أموكسيسيلين</option>
-                                    <option value="silver-iodide">يوديد الفضة</option>
-                                    <option value="titanium-dioxide">ثاني أكسيد التيتانيوم</option>
-                                    <option value="sodium-hypochlorite">هيبوكلوريت الصوديوم</option>
-                                    <option value="vitamin-c">فيتامين ج</option>
+                                    <option value="paracetamol">باراسيتامول (Paracetamol)</option>
+                                    <option value="ibuprofen">آيبوبروفين (Ibuprofen)</option>
+                                    <option value="amoxicillin">أموكسيسيلين (Amoxicillin)</option>
+                                    <option value="silver-iodide">يوديد الفضة (Silver Iodide)</option>
+                                    <option value="titanium-dioxide">ثاني أكسيد التيتانيوم (TiO₂)</option>
+                                    <option value="sodium-hypochlorite">هيبوكلوريت الصوديوم (NaClO)</option>
+                                    <option value="vitamin-c">فيتامين ج (Ascorbic Acid)</option>
                                     <option value="custom">مادة مخصصة...</option>
                                 </select>
                                 
@@ -193,9 +224,9 @@
                             
                             <div class="add-excipient-form">
                                 <div class="form-group">
-                                    <label for="excipientName">اسم المادة المساعدة</label>
+                                    <label for="excipientName">اسم المادة</label>
                                     <select id="excipientName">
-                                        <option value="">اختر المادة المساعدة...</option>
+                                        <option value="">اختر المادة...</option>
                                         <optgroup label="المواد المالئة">
                                             <option value="lactose">لاكتوز اللامائي</option>
                                             <option value="mcc">سليولوز ميكروكريستاليني (MCC)</option>
@@ -204,7 +235,7 @@
                                             <option value="starch">نشا الذرة</option>
                                         </optgroup>
                                         <optgroup label="المواد الرابطة">
-                                            <option value="povidone">بوفيدون (PVP)</option>
+                                            <option value="povidone">بوفيدون (Povidone)</option>
                                             <option value="hpmc">هيدروكسي بروبيل ميثيل سليولوز (HPMC)</option>
                                             <option value="gelatin">جيلاتين</option>
                                             <option value="acacia">صمغ عربي</option>
@@ -217,10 +248,10 @@
                                         <optgroup label="المواد المزلقة">
                                             <option value="magnesium-stearate">ستيرات المغنيسيوم</option>
                                             <option value="talc">التلك</option>
-                                            <option value="silicon-dioxide">ثاني أكسيد السيليكون الغروي</option>
+                                            <option value="silicon-dioxide">ثاني أكسيد السيليكون</option>
                                             <option value="stearic-acid">حمض الشمع</option>
                                         </optgroup>
-                                        <option value="custom">مادة مساعدة مخصصة...</option>
+                                        <option value="custom">مادة مخصصة...</option>
                                     </select>
                                 </div>
                                 
@@ -255,14 +286,14 @@
                             </div>
                             
                             <div class="form-group">
-                                <label for="customExcipientName" style="display: none;" id="customNameLabel">اسم المادة المساعدة المخصصة</label>
-                                <input type="text" id="customExcipientName" placeholder="أدخل اسم المادة المساعدة المخصصة" style="display: none;">
+                                <label for="customExcipientName" style="display: none;" id="customNameLabel">اسم المادة المخصصة</label>
+                                <input type="text" id="customExcipientName" placeholder="أدخل اسم المادة المخصصة" style="display: none;">
                             </div>
                         </div>
                         
                         <div>
                             <h5 style="color: var(--dark-color); margin-bottom: 10px;">
-                                <i class="fas fa-list"></i> قائمة المواد المساعدة اليدوية
+                                <i class="fas fa-list"></i> قائمة المواد المضافة يدوياً
                                 <span id="manualExcipientsCount" style="font-size: 0.9rem; color: #666; margin-right: 10px;">(0 مادة)</span>
                             </h5>
                             
@@ -325,18 +356,18 @@
                                         </label>
                                         <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                                             <input type="checkbox" id="sugarFree" value="sugar-free">
-                                            <span>تركيبة خالية من السكر</span>
+                                            <span>خالٍ من السكر</span>
                                         </label>
                                         <label style="display: flex; align-items: center; gap: 8px;">
                                             <input type="checkbox" id="preservativeFree" value="preservative-free">
-                                            <span>خالية من المواد الحافظة</span>
+                                            <span>خالٍ من المواد الحافظة</span>
                                         </label>
                                     </div>
                                 </div>
                                 
                                 <div class="auto-option">
-                                    <h5><i class="fas fa-bolt"></i> أولوية الأداء</h5>
-                                    <p>اختر أولوية أداء التركيبة:</p>
+                                    <h5><i class="fas fa-bolt"></i> أداء التركيبة</h5>
+                                    <p>اختر أولوية الأداء:</p>
                                     <select id="performancePriority" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
                                         <option value="fast-release">تحرر سريع</option>
                                         <option value="sustained-release" selected>تحرر مستمر</option>
@@ -357,8 +388,7 @@
                                 </p>
                                 
                                 <div class="auto-excipients-preview" id="autoExcipientsPreview">
-                                    <!-- سيتم تحديثه تلقائياً -->
-                                    <div class="auto-excipient-tag">لاكتوز</div>
+                                    <div class="auto-excipient-tag">سليولوز ميكروكريستاليني</div>
                                     <div class="auto-excipient-tag">بوفيدون</div>
                                     <div class="auto-excipient-tag">كروسكارميلوز</div>
                                     <div class="auto-excipient-tag">ستيرات مغنيسيوم</div>
@@ -431,7 +461,8 @@
                     </div>
                 </div>
                 
-                <div id="resultsContent" class="results-content">
+                <!-- قسم النتائج الرئيسي - تم تصحيحه -->
+                <div id="resultsContent" class="results-content" style="display: none;">
                     <div class="formula-header">
                         <div>
                             <div class="formula-name-display" id="formulaNameDisplay">باراسيتامول 500 مجم</div>
@@ -542,9 +573,9 @@
     <footer>
         <div class="container">
             <div class="footer-content">
-                <div class="logo">
+                <div class="footer-logo">
                     <i class="fas fa-atom"></i>
-                    <h3>مُحسّن التركيبة الكيميائية</h3>
+                    <h3>برنامج تصميم التركيبة الكيميائية</h3>
                 </div>
                 
                 <div class="disclaimer">
@@ -557,6 +588,6 @@
     </footer>
     
     <!-- JavaScript Files -->
-    <script src="script-ar.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
