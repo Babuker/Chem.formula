@@ -11,6 +11,12 @@ A web-based tool for designing optimal chemical formulations with economic consi
 - Cost optimization algorithms
 - Quality specifications display
 - Export and save functionality
+- AI-powered suggestions
+- Interactive pie charts
+- PDF export capability
+
+## Live Demo
+Visit: https://babuker.github.io/Chem.formula/
 
 ## Installation
 1. Download all files to a folder
@@ -30,11 +36,9 @@ A web-based tool for designing optimal chemical formulations with economic consi
 - `index.html` - English interface
 - `index-ar.html` - Arabic interface
 - `style.css` - Common styles
-- `lang-en.css` - English-specific styles
-- `lang-ar.css` - Arabic-specific styles
 - `script.js` - Core JavaScript logic
-- `script-en.js` - English text functions
-- `script-ar.js` - Arabic text functions
+- `manifest.json` - PWA manifest
+- `.nojekyll` - GitHub Pages configuration
 
 ## Browser Support
 - Chrome 60+
