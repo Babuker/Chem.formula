@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مُحسّن التركيبة الكيميائية - تصميم تركيبة اقتصادية</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="lang-ar.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+</head>
+<body class="lang-ar">
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-atom"></i>
+                    <div>
+                        <h1>مُحسّن التركيبة الكيميائية</h1>
+                        <p>التوازن الأمثل بين الأداء والتكلفة باستخدام الذكاء الاصطناعي</p>
+                    </div>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" onclick="switchLanguage('en')"><i class="fas fa-language"></i> English</a></li>
+                        <li><a href="#"><i class="fas fa-home"></i> الرئيسية</a></li>
+                        <li><a href="#"><i class="fas fa-book"></i> التوثيق</a></li>
+                        <li><a href="#"><i class="fas fa-database"></i> قاعدة البيانات</a></li>
+                        <li><a href="#"><i class="fas fa-envelope"></i> اتصل بنا</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="main-content">
+            <!-- Form Section -->
+            <section class="form-section">
+                <div class="section-title">
+                    <i class="fas fa-sliders-h"></i>
+                    <h2>إعدادات التصميم</h2>
+                </div>
+                
+                <form id="formulaForm">
+                    <!-- Basic Information Section -->
+                    <div class="basic-info-section">
+                        <div class="section-title" style="border: none; padding: 0; margin: 0 0 15px 0;">
+                            <i class="fas fa-info-circle"></i>
+                            <h3 style="font-size: 1.2rem;">المعلومات الأساسية</h3>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="formulaName"><i class="fas fa-tag"></i> اسم التركيبة المطلوبة</label>
+                            <input type="text" id="formulaName" placeholder="مثال: باراسيتامول 500 ملج - تركيز عالي" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-book-medical"></i> المرجعية (الدستور الدوائي)</label>
+                            <div class="reference-badges">
+                                <div class="reference-badge bp active" data-reference="bp">
+                                    <i class="fas fa-flag-uk"></i> الدستور البريطاني (BP)
+                                </div>
+                                <div class="reference-badge usp" data-reference="usp">
+                                    <i class="fas fa-flag-usa"></i> الدستور الأمريكي (USP)
+                                </div>
+                            </div>
+                            <input type="hidden" id="reference" value="bp" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-pills"></i> شكل المنتج المطلوب</label>
+                            <div class="product-form-options">
+                                <div class="product-form-option" data-form="tablet-uncoated">
+                                    <i class="fas fa-tablet-alt"></i>
+                                    <div>قرص غير مغلف</div>
+                                    <small>تحرر فوري</small>
+                                </div>
+                                <div class="product-form-option" data-form="tablet-coated">
+                                    <i class="fas fa-tablet-alt"></i>
+                                    <div>قرص مغلف</div>
+                                    <small>معوي/مغلف بالسكر</small>
+                                </div>
+                                <div class="product-form-option" data-form="capsule">
+                                    <i class="fas fa-capsules"></i>
+                                    <div>كبسولة</div>
+                                    <small>جيلاتين صلب/طري</small>
+                                </div>
+                                <div class="product-form-option" data-form="syrup">
+                                    <i class="fas fa-wine-bottle"></i>
+                                    <div>شراب</div>
+                                    <small>سائل فموي</small>
+                                </div>
+                                <div class="product-form-option" data-form="powder">
+                                    <i class="fas fa-mortar-pestle"></i>
+                                    <div>مسحوق</div>
+                                    <small>للمعلقات</small>
+                                </div>
+                            </div>
+                            <input type="hidden" id="productForm" value="" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Active Ingredients Section -->
+                    <div class="active-ingredient-section">
+                        <div class="section-title" style="border: none; padding: 0; margin: 0 0 15px 0;">
+                            <i class="fas fa-vial"></i>
+                            <h3 style="font-size: 1.2rem;">المواد الفعالة</h3>
+                        </div>
+                        
+                        <div id="activeIngredientsContainer">
+                            <!-- الصف الأول للمادة الفعالة -->
+                            <div class="ingredient-row">
+                                <select class="active-ingredient" required>
+                                    <option value="">اختر المادة الفعالة...</option>
+                                    <option value="paracetamol">باراسيتامول</option>
+                                    <option value="ibuprofen">آيبوبروفين</option>
+                                    <option value="amoxicillin">أموكسيسيلين</option>
+                                    <option value="silver-iodide">يوديد الفضة</option>
+                                    <option value="titanium-dioxide">ثاني أكسيد التيتانيوم</option>
+                                    <option value="sodium-hypochlorite">هيبوكلوريت الصوديوم</option>
+                                    <option value="vitamin-c">فيتامين ج</option>
+                                    <option value="custom">مادة مخصصة...</option>
+                                </select>
+                                
+                                <div class="input-with-unit">
+                                    <input type="number" class="active-ingredient-amount" min="1" max="10000" step="0.1" value="500" required>
+                                    <div class="unit" id="unitLabel">مجم</div>
+                                </div>
+                                
+                                <button type="button" class="remove-ingredient" onclick="removeIngredientRow(this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn btn-secondary" onclick="addIngredientRow()" style="margin-top: 10px;">
+                            <i class="fas fa-plus"></i> إضافة مادة فعالة أخرى
+                        </button>
+                        
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label for="totalWeight"><i class="fas fa-weight"></i> الوزن/الحجم الكلي للتركيبة</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="totalWeight" min="1" max="10000" step="1" value="1000" required>
+                                <div class="unit" id="totalUnitLabel">مجم (لكل وحدة)</div>
+                            </div>
+                            <small style="color: #666; display: block; margin-top: 5px;">الوزن الإجمالي للتركيبة النهائية (لكل قرص، كبسولة، مل، إلخ)</small>
+                        </div>
+                    </div>
+                    
+                    <!-- Input Method Section -->
+                    <div class="input-method-section">
+                        <div class="section-title" style="border: none; padding: 0; margin: 0 0 15px 0;">
+                            <i class="fas fa-tools"></i>
+                            <h3 style="font-size: 1.2rem;">طريقة إضافة المواد المساعدة</h3>
+                        </div>
+                        
+                        <div class="input-method-options">
+                            <div class="input-method-option" id="manualOption" onclick="selectInputMethod('manual')">
+                                <i class="fas fa-hand-pointer"></i>
+                                <h4>الاختيار اليدوي</h4>
+                                <p>اختر المواد المضافة يدوياً واحدة تلو الأخرى حسب خبرتك</p>
+                                <div style="margin-top: 10px; font-size: 0.8rem; color: #f57c00;">
+                                    <i class="fas fa-user-edit"></i> مناسب للمتخصصين
+                                </div>
+                            </div>
+                            
+                            <div class="input-method-option selected" id="autoOption" onclick="selectInputMethod('auto')">
+                                <i class="fas fa-robot"></i>
+                                <h4>الإدخال الآلي</h4>
+                                <p>البرنامج يختار المواد المضافة تلقائياً بناءً على معاييرك</p>
+                                <div style="margin-top: 10px; font-size: 0.8rem; color: #388e3c;">
+                                    <i class="fas fa-bolt"></i> سريع وذكي
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="inputMethod" value="auto">
+                    </div>
+                    
+                    <!-- Manual Input Section -->
+                    <div class="manual-input-section" id="manualInputSection">
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: var(--dark-color); margin-bottom: 15px;">
+                                <i class="fas fa-plus-circle"></i> أضف المواد المساعدة يدوياً
+                            </h4>
+                            
+                            <div class="add-excipient-form">
+                                <div class="form-group">
+                                    <label for="excipientName">اسم المادة المساعدة</label>
+                                    <select id="excipientName">
+                                        <option value="">اختر المادة المساعدة...</option>
+                                        <optgroup label="المواد المالئة">
+                                            <option value="lactose">لاكتوز اللامائي</option>
+                                            <option value="mcc">سليولوز ميكروكريستاليني (MCC)</option>
+                                            <option value="mannitol">مانيتول</option>
+                                            <option value="dibasic-calcium-phosphate">فوسفات الكالسيوم ثنائي الأساس</option>
+                                            <option value="starch">نشا الذرة</option>
+                                        </optgroup>
+                                        <optgroup label="المواد الرابطة">
+                                            <option value="povidone">بوفيدون (PVP)</option>
+                                            <option value="hpmc">هيدروكسي بروبيل ميثيل سليولوز (HPMC)</option>
+                                            <option value="gelatin">جيلاتين</option>
+                                            <option value="acacia">صمغ عربي</option>
+                                        </optgroup>
+                                        <optgroup label="المواد المفككة">
+                                            <option value="croscarmellose">صوديوم كروكارميلوز</option>
+                                            <option value="crospovidone">كروسپوفيدون</option>
+                                            <option value="sodium-starch-glycolate">نشا الصوديوم جليكولات</option>
+                                        </optgroup>
+                                        <optgroup label="المواد المزلقة">
+                                            <option value="magnesium-stearate">ستيرات المغنيسيوم</option>
+                                            <option value="talc">التلك</option>
+                                            <option value="silicon-dioxide">ثاني أكسيد السيليكون الغروي</option>
+                                            <option value="stearic-acid">حمض الشمع</option>
+                                        </optgroup>
+                                        <option value="custom">مادة مساعدة مخصصة...</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="excipientFunction">الوظيفة</label>
+                                    <select id="excipientFunction">
+                                        <option value="filler">مادة مالئة</option>
+                                        <option value="binder">مادة رابطة</option>
+                                        <option value="disintegrant">مادة مفككة</option>
+                                        <option value="lubricant">مادة مزلقة</option>
+                                        <option value="coating">مادة طلاء</option>
+                                        <option value="preservative">مادة حافظة</option>
+                                        <option value="colorant">ملون</option>
+                                        <option value="flavor">منكّه</option>
+                                        <option value="custom">وظيفة مخصصة</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="excipientPercentage">النسبة (%)</label>
+                                    <div class="input-with-unit">
+                                        <input type="number" id="excipientPercentage" min="0.1" max="100" step="0.1" value="5">
+                                        <div class="unit">%</div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <button type="button" class="btn" onclick="addManualExcipient()" style="padding: 10px; margin-top: 0;">
+                                        <i class="fas fa-plus"></i> إضافة
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="customExcipientName" style="display: none;" id="customNameLabel">اسم المادة المساعدة المخصصة</label>
+                                <input type="text" id="customExcipientName" placeholder="أدخل اسم المادة المساعدة المخصصة" style="display: none;">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h5 style="color: var(--dark-color); margin-bottom: 10px;">
+                                <i class="fas fa-list"></i> قائمة المواد المساعدة اليدوية
+                                <span id="manualExcipientsCount" style="font-size: 0.9rem; color: #666; margin-right: 10px;">(0 مادة)</span>
+                            </h5>
+                            
+                            <div class="manual-excipients-list" id="manualExcipientsList">
+                                <div style="text-align: center; padding: 30px; color: #999;">
+                                    <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                    <p>لم يتم إضافة أي مواد مساعدة بعد</p>
+                                    <small>استخدم النموذج أعلاه لإضافة المواد</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button type="button" class="btn btn-secondary" onclick="clearManualExcipients()" style="flex: 1; min-width: 150px;">
+                                <i class="fas fa-trash-alt"></i> مسح الكل
+                            </button>
+                            <button type="button" class="btn" onclick="loadCommonFormulation()" style="flex: 1; min-width: 150px; background-color: #5c6bc0;">
+                                <i class="fas fa-magic"></i> تحميل تركيبة شائعة
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Auto Input Section -->
+                    <div class="auto-input-section" id="autoInputSection">
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: var(--dark-color); margin-bottom: 10px;">
+                                <i class="fas fa-cogs"></i> إعدادات الاختيار الآلي
+                            </h4>
+                            <p style="color: #666; margin-bottom: 15px;">
+                                سيختار البرنامج المواد المضافة تلقائياً بناءً على المعايير التالية:
+                            </p>
+                            
+                            <div class="auto-options">
+                                <div class="auto-option">
+                                    <h5><i class="fas fa-money-bill-wave"></i> استراتيجية التكلفة</h5>
+                                    <p>اختر أولوية التكلفة في اختيار المواد:</p>
+                                    <select id="costStrategy" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+                                        <option value="lowest">أقل تكلفة ممكنة</option>
+                                        <option value="balanced" selected>توازن بين التكلفة والجودة</option>
+                                        <option value="premium">أفضل جودة بغض النظر عن التكلفة</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="auto-option">
+                                    <h5><i class="fas fa-industry"></i> استراتيجية الإنتاج</h5>
+                                    <p>اختر أولوية عملية التصنيع:</p>
+                                    <select id="productionStrategy" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+                                        <option value="easy-processing">سهولة التصنيع</option>
+                                        <option value="high-speed" selected>سرعة إنتاج عالية</option>
+                                        <option value="stability">ثبات وموثوقية</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="auto-option">
+                                    <h5><i class="fas fa-leaf"></i> معايير خاصة</h5>
+                                    <div style="margin-top: 10px;">
+                                        <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                            <input type="checkbox" id="vegetarianCapsules" value="vegetarian">
+                                            <span>كبسولات نباتية (خالية من الجيلاتين)</span>
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                            <input type="checkbox" id="sugarFree" value="sugar-free">
+                                            <span>تركيبة خالية من السكر</span>
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 8px;">
+                                            <input type="checkbox" id="preservativeFree" value="preservative-free">
+                                            <span>خالية من المواد الحافظة</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="auto-option">
+                                    <h5><i class="fas fa-bolt"></i> أولوية الأداء</h5>
+                                    <p>اختر أولوية أداء التركيبة:</p>
+                                    <select id="performancePriority" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+                                        <option value="fast-release">تحرر سريع</option>
+                                        <option value="sustained-release" selected>تحرر مستمر</option>
+                                        <option value="targeted-release">تحرر موجه</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h5 style="color: var(--dark-color); margin-bottom: 10px;">
+                                <i class="fas fa-eye"></i> معاينة المواد المقترحة
+                            </h5>
+                            
+                            <div style="background-color: white; padding: 15px; border-radius: 8px; border: 1px solid #c8e6c9;">
+                                <p style="margin-bottom: 10px; color: #666;">
+                                    بناءً على إعداداتك، سيختار البرنامج المواد التالية تلقائياً:
+                                </p>
+                                
+                                <div class="auto-excipients-preview" id="autoExcipientsPreview">
+                                    <!-- سيتم تحديثه تلقائياً -->
+                                    <div class="auto-excipient-tag">لاكتوز</div>
+                                    <div class="auto-excipient-tag">بوفيدون</div>
+                                    <div class="auto-excipient-tag">كروسكارميلوز</div>
+                                    <div class="auto-excipient-tag">ستيرات مغنيسيوم</div>
+                                </div>
+                                
+                                <div style="margin-top: 15px; text-align: center;">
+                                    <button type="button" class="btn btn-secondary" onclick="regenerateAutoSuggestions()" style="padding: 8px 20px;">
+                                        <i class="fas fa-sync-alt"></i> إعادة توليد المقترحات
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 15px; background-color: #e3f2fd; padding: 12px; border-radius: 8px;">
+                            <p style="margin: 0; color: #1565c0; font-size: 0.9rem;">
+                                <i class="fas fa-lightbulb"></i> 
+                                <strong>تلميح:</strong> يستخدم البرنامج خوارزميات الذكاء الاصطناعي لتحليل أكثر من 1000 تركيبة واختيار الأفضل بناءً على معاييرك.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Settings -->
+                    <div class="form-group">
+                        <label for="primaryGoal"><i class="fas fa-bullseye"></i> الهدف الأساسي للتصميم</label>
+                        <select id="primaryGoal" required>
+                            <option value="">اختر الهدف الأساسي...</option>
+                            <option value="min-cost">الحد الأدنى للتكلفة</option>
+                            <option value="max-performance">الحد الأقصى للأداء</option>
+                            <option value="balanced" selected>توازن بين التكلفة والأداء</option>
+                            <option value="fast-production">سرعة الإنتاج</option>
+                            <option value="eco-friendly">صديق للبيئة</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="budget"><i class="fas fa-money-bill-wave"></i> الميزانية المستهدفة</label>
+                        <input type="range" id="budget" min="10" max="1000" value="200" step="10">
+                        <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                            <span>منخفضة (10)</span>
+                            <span id="budgetValue">200</span>
+                            <span>عالية (1000)</span>
+                        </div>
+                        <small style="color: #666;">التكلفة لكل كجم من المنتج النهائي</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes"><i class="fas fa-sticky-note"></i> ملاحظات إضافية</label>
+                        <textarea id="notes" placeholder="أي متطلبات خاصة، حساسيات، مواد ممنوعة، أو إرشادات خاصة..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="calculateBtn">
+                        <i class="fas fa-calculator"></i> تصميم التركيبة المثالية
+                    </button>
+                </form>
+            </section>
+            
+            <!-- Results Section -->
+            <section class="results-section">
+                <div class="section-title">
+                    <i class="fas fa-chart-line"></i>
+                    <h2>النتائج والتركيبة المثالية</h2>
+                </div>
+                
+                <div id="resultsPlaceholder" class="results-placeholder">
+                    <i class="fas fa-search"></i>
+                    <h3>النتائج ستظهر هنا</h3>
+                    <p>قم بملء النموذج على اليسار ثم اضغط على "تصميم التركيبة المثالية"</p>
+                    <div style="margin-top: 20px; color: #666; max-width: 400px;">
+                        <small>البرنامج سيحلل أكثر من 1000 تركيبة محتملة ليجد الأنسب بناءً على معاييرك</small>
+                    </div>
+                </div>
+                
+                <div id="resultsContent" class="results-content">
+                    <div class="formula-header">
+                        <div>
+                            <div class="formula-name-display" id="formulaNameDisplay">باراسيتامول 500 مجم</div>
+                            <div class="formula-meta">
+                                <span class="meta-badge reference bp" id="referenceBadge">BP</span>
+                                <span class="meta-badge form" id="formBadge">قرص غير مغلف</span>
+                                <span><i class="far fa-calendar"></i> تاريخ التصميم: <span id="designDate">2023-10-15</span></span>
+                            </div>
+                        </div>
+                        <div class="cost-badge" id="totalCost">$0.42/لكل 1000 قرص</div>
+                    </div>
+                    
+                    <div class="formula-details">
+                        <h4>مكونات التركيبة المثالية:</h4>
+                        <table class="formula-table" id="formulaTable">
+                            <thead>
+                                <tr>
+                                    <th>المادة</th>
+                                    <th>الكمية/النسبة</th>
+                                    <th>الوظيفة</th>
+                                    <th>التكلفة</th>
+                                    <th>المرجعية</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- سيتم ملؤها بواسطة JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="formula-details">
+                        <h4>مواصفات الجودة (<span id="specsReference">BP</span>):</h4>
+                        <table class="specifications-table bp" id="specificationsTable">
+                            <thead>
+                                <tr>
+                                    <th>الاختبار</th>
+                                    <th>المواصفات</th>
+                                    <th>نتيجة التركيبة</th>
+                                    <th>الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="specificationsBody">
+                                <!-- سيتم ملؤها بواسطة JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="performance-metrics" id="performanceMetrics">
+                        <!-- سيتم ملؤها بواسطة JavaScript -->
+                    </div>
+                    
+                    <div style="margin-top: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-success" onclick="exportResults()" style="flex: 1; min-width: 200px;">
+                            <i class="fas fa-file-export"></i> تصدير التقرير
+                        </button>
+                        <button class="btn" onclick="saveFormula()" style="flex: 1; min-width: 200px; background-color: var(--primary-color);">
+                            <i class="fas fa-save"></i> حفظ التركيبة
+                        </button>
+                        <button class="btn btn-info" onclick="window.print()" style="flex: 1; min-width: 200px;">
+                            <i class="fas fa-print"></i> طباعة النتائج
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <!-- Examples Section -->
+        <section class="examples-section">
+            <div class="section-title">
+                <i class="fas fa-vial"></i>
+                <h2>أمثلة سريعة للبدء</h2>
+            </div>
+            
+            <div class="examples-grid">
+                <div class="example-card" data-example="paracetamol">
+                    <h4><i class="fas fa-tablets"></i> قرص باراسيتامول اقتصادي</h4>
+                    <p>تركيبة مثالية لقرص باراسيتامول 500 مجم مع تحقيق أقل تكلفة مع الحفاظ على معايير الجودة.</p>
+                    <div class="example-tags">
+                        <span class="tag">دوائي</span>
+                        <span class="tag">اقتصادي</span>
+                        <span class="tag">مثبت</span>
+                    </div>
+                </div>
+                
+                <div class="example-card" data-example="cloud-seeding">
+                    <h4><i class="fas fa-cloud-rain"></i> محلول استمطار السحب</h4>
+                    <p>تركيبة فعالة من يوديد الفضة مع مواد ناقلة لتحفيز هطول الأمطار بأقل تكلفة ممكنة.</p>
+                    <div class="example-tags">
+                        <span class="tag">هندسة مناخ</span>
+                        <span class="tag">بيئي</span>
+                        <span class="tag">اقتصادي</span>
+                    </div>
+                </div>
+                
+                <div class="example-card" data-example="paint">
+                    <h4><i class="fas fa-paint-roller"></i> دهان داخلي اقتصادي</h4>
+                    <p>تركيبة دهان جدران داخلي عالي الجودة مع تقليل تكلفة المواد الأولية بنسبة 22%.</p>
+                    <div class="example-tags">
+                        <span class="tag">دهانات</span>
+                        <span class="tag">توفير</span>
+                        <span class="tag">عالي الجودة</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">
+                    <i class="fas fa-atom"></i>
+                    <h3>مُحسّن التركيبة الكيميائية</h3>
+                </div>
+                
+                <div class="disclaimer">
+                    <p><i class="fas fa-exclamation-triangle"></i> <strong>تنبيه:</strong> هذا البرنامج هو أداة مساعدة للتخطيط والتصميم الأولي. يجب التحقق من جميع النتائج معملياً ومراجعتها من قبل كيميائيين مؤهلين قبل التطبيق العملي. البرنامج لا يتحمل مسؤولية أي أضرار قد تنتج عن استخدام التركيبات المصممة.</p>
+                </div>
+                
+                <p>© 2023 جميع الحقوق محفوظة | تم التطوير باستخدام HTML, CSS, JavaScript</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript Files -->
+    <script src="script-ar.js"></script>
+</body>
+</html>
