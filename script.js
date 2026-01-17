@@ -1488,5 +1488,16 @@ window.regenerateAutoSuggestions = regenerateAutoSuggestions;
 window.exportResults = exportResults;
 window.saveFormula = saveFormula;
 window.loadExample = loadExample;
-
+// كود تشخيصي مؤقت
+console.log("تم تحميل script.js بنجاح");
+const testButton = document.getElementById('calculateBtn');
+if(testButton) {
+    console.log("تم العثور على زر الحساب");
+    testButton.addEventListener('click', function() {
+        console.log("تم النقر على زر التصميم!");
+        alert("زر التصميم يعمل! الخطأ في دالة generateResults الداخلية.");
+    });
+} else {
+    console.error("لم يتم العثور على زر الحساب بالمعرف calculateBtn");
+}
 console.log('برنامج تصميم التركيبة الكيميائية جاهز للاستخدام!');
