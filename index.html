@@ -4,17 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chemical Formula Optimizer - AI-Powered Formulation Design</title>
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS -->
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+    
+    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- Internationalization support -->
     <style>
-        /* English-specific styles */
-        :root[lang="en"] {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
+        /* Language Switcher */
         .lang-switcher {
             position: fixed;
             top: 20px;
@@ -42,44 +46,96 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
         
-        .lang-btn i {
+        /* Toast Styles */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .toast.success {
+            background: linear-gradient(135deg, #27ae60, #219653);
+        }
+        
+        .toast.error {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .toast.info {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .toast.warning {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+        
+        .toast i {
             font-size: 1.2rem;
         }
         
-        /* Additional English styles */
-        .formula-name-display {
-            font-size: 1.8rem;
+        /* Status Badges */
+        .status {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Compliance Badge */
+        .compliance-badge {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
             font-weight: 700;
-            background: linear-gradient(45deg, #2c3e50, #3498db);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
+            display: inline-block;
         }
         
-        .examples-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-            margin-top: 25px;
+        .compliance-badge.bp {
+            background: linear-gradient(135deg, #4a90e2, #2c7dd2);
+            color: white;
         }
         
-        .example-card {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            padding: 25px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            cursor: pointer;
-        }
-        
-        .example-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-            border-color: #3498db;
+        .compliance-badge.usp {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            color: white;
         }
     </style>
 </head>
-<body lang="en">
+<body>
     <!-- Language Switcher -->
     <div class="lang-switcher">
         <button class="lang-btn" onclick="switchLanguage('ar')">
@@ -149,7 +205,7 @@
                         <div class="form-group">
                             <label><i class="fas fa-pills"></i> Required Product Form</label>
                             <div class="product-form-options">
-                                <div class="product-form-option" data-form="tablet-uncoated">
+                                <div class="product-form-option active" data-form="tablet-uncoated">
                                     <i class="fas fa-tablet-alt"></i>
                                     <div>Uncoated Tablet</div>
                                     <small>Direct Compression</small>
@@ -175,7 +231,7 @@
                                     <small>Dry Mix</small>
                                 </div>
                             </div>
-                            <input type="hidden" id="productForm" value="" required>
+                            <input type="hidden" id="productForm" value="tablet-uncoated" required>
                         </div>
                     </div>
                     
@@ -198,12 +254,11 @@
                                     <option value="titanium-dioxide">Titanium Dioxide (TiO₂)</option>
                                     <option value="sodium-hypochlorite">Sodium Hypochlorite (NaClO)</option>
                                     <option value="vitamin-c">Vitamin C (Ascorbic Acid)</option>
-                                    <option value="custom">Custom Ingredient...</option>
                                 </select>
                                 
                                 <div class="input-with-unit">
                                     <input type="number" class="active-ingredient-amount" min="1" max="10000" step="0.1" value="500" required>
-                                    <div class="unit" id="unitLabel">mg</div>
+                                    <div class="unit">mg</div>
                                 </div>
                                 
                                 <button type="button" class="remove-ingredient" onclick="removeIngredientRow(this)">
@@ -220,7 +275,7 @@
                             <label for="totalWeight"><i class="fas fa-weight"></i> Total Formulation Weight/Volume</label>
                             <div class="input-with-unit">
                                 <input type="number" id="totalWeight" min="1" max="10000" step="1" value="1000" required>
-                                <div class="unit" id="totalUnitLabel">mg (per unit)</div>
+                                <div class="unit">mg (per unit)</div>
                             </div>
                             <small style="color: #666; display: block; margin-top: 5px;">Total weight of final formulation (per tablet, capsule, ml, etc.)</small>
                         </div>
@@ -306,7 +361,6 @@
                                         <option value="preservative">Preservative</option>
                                         <option value="colorant">Colorant</option>
                                         <option value="flavor">Flavor</option>
-                                        <option value="custom">Custom Function</option>
                                     </select>
                                 </div>
                                 
@@ -430,7 +484,7 @@
                                 <div class="auto-excipients-preview" id="autoExcipientsPreview">
                                     <div class="auto-excipient-tag">Microcrystalline Cellulose</div>
                                     <div class="auto-excipient-tag">Povidone</div>
-                                    <div class="auto-excipient-tag">Sodium Croscarmellose</div>
+                                    <div class="auto-excipient-tag">Croscarmellose</div>
                                     <div class="auto-excipient-tag">Magnesium Stearate</div>
                                 </div>
                                 
@@ -476,7 +530,7 @@
                     
                     <div class="form-group">
                         <label for="notes"><i class="fas fa-sticky-note"></i> Additional Notes</label>
-                        <textarea id="notes" placeholder="Any special requirements, sensitivities, prohibited materials, or specific instructions..."></textarea>
+                        <textarea id="notes" placeholder="Any special requirements, sensitivities, prohibited materials, or specific instructions..." rows="3"></textarea>
                     </div>
                     
                     <button type="submit" class="btn" id="calculateBtn">
@@ -517,20 +571,22 @@
                     
                     <div class="formula-details">
                         <h4><i class="fas fa-list-alt"></i> Optimal Formula Components:</h4>
-                        <table class="formula-table" id="formulaTable">
-                            <thead>
-                                <tr>
-                                    <th>Component</th>
-                                    <th>Amount/Percentage</th>
-                                    <th>Function</th>
-                                    <th>Cost</th>
-                                    <th>Reference</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Will be populated by JavaScript -->
-                            </tbody>
-                        </table>
+                        <div class="table-container">
+                            <table class="formula-table" id="formulaTable">
+                                <thead>
+                                    <tr>
+                                        <th>Component</th>
+                                        <th>Amount/Percentage</th>
+                                        <th>Function</th>
+                                        <th>Cost</th>
+                                        <th>Reference</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     
                     <div class="formula-details">
@@ -542,19 +598,21 @@
                     
                     <div class="formula-details">
                         <h4><i class="fas fa-award"></i> Quality Specifications (<span id="specsReference">BP</span>):</h4>
-                        <table class="specifications-table bp" id="specificationsTable">
-                            <thead>
-                                <tr>
-                                    <th>Test</th>
-                                    <th>Specification</th>
-                                    <th>Formula Result</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="specificationsBody">
-                                <!-- Will be populated by JavaScript -->
-                            </tbody>
-                        </table>
+                        <div class="table-container">
+                            <table class="specifications-table bp" id="specificationsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Test</th>
+                                        <th>Specification</th>
+                                        <th>Formula Result</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="specificationsBody">
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     
                     <div class="performance-metrics" id="performanceMetrics">
@@ -568,7 +626,7 @@
                         <button class="btn" onclick="saveFormula()" style="flex: 1; min-width: 200px; background-color: var(--primary-color);">
                             <i class="fas fa-save"></i> Save Formula
                         </button>
-                        <button class="btn btn-info" onclick="window.print()" style="flex: 1; min-width: 200px;">
+                        <button class="btn btn-info" onclick="printResults()" style="flex: 1; min-width: 200px;">
                             <i class="fas fa-print"></i> Print Results
                         </button>
                     </div>
@@ -584,7 +642,7 @@
             </div>
             
             <div class="examples-grid">
-                <div class="example-card" data-example="paracetamol" onclick="loadExample('paracetamol')">
+                <div class="example-card" onclick="loadExample('paracetamol')">
                     <h4><i class="fas fa-tablets"></i> Economic Paracetamol Tablet</h4>
                     <p>Optimal formula for Paracetamol 500mg tablet achieving lowest cost while maintaining quality standards.</p>
                     <div class="example-tags">
@@ -594,7 +652,7 @@
                     </div>
                 </div>
                 
-                <div class="example-card" data-example="cloud-seeding" onclick="loadExample('cloud-seeding')">
+                <div class="example-card" onclick="loadExample('cloud-seeding')">
                     <h4><i class="fas fa-cloud-rain"></i> Cloud Seeding Solution</h4>
                     <p>Effective Silver Iodide formulation with carrier materials for rain stimulation at minimum cost.</p>
                     <div class="example-tags">
@@ -604,7 +662,7 @@
                     </div>
                 </div>
                 
-                <div class="example-card" data-example="paint" onclick="loadExample('paint')">
+                <div class="example-card" onclick="loadExample('paint')">
                     <h4><i class="fas fa-paint-roller"></i> Economic Interior Paint</h4>
                     <p>High-quality interior wall paint formulation reducing raw material costs by 22%.</p>
                     <div class="example-tags">
@@ -641,6 +699,7 @@
     <!-- Main JavaScript File -->
     <script src="script.js"></script>
     
+    <!-- Page-Specific JavaScript -->
     <script>
         // Language switching function
         function switchLanguage(lang) {
@@ -655,55 +714,65 @@
         function loadExample(example) {
             if (example === 'paracetamol') {
                 document.getElementById('formulaName').value = 'Paracetamol 500mg Tablet';
+                document.getElementById('reference').value = 'bp';
+                document.querySelector('.reference-badge.bp').classList.add('active');
+                document.querySelector('.reference-badge.usp').classList.remove('active');
+                
                 document.getElementById('productForm').value = 'tablet-uncoated';
-                document.querySelector('.product-form-option[data-form="tablet-uncoated"]').click();
+                document.querySelectorAll('.product-form-option').forEach(opt => opt.classList.remove('active'));
+                document.querySelector('.product-form-option[data-form="tablet-uncoated"]').classList.add('active');
+                
                 document.querySelector('.active-ingredient').value = 'paracetamol';
                 document.querySelector('.active-ingredient-amount').value = '500';
+                document.getElementById('totalWeight').value = '1000';
+                
                 document.getElementById('primaryGoal').value = 'min-cost';
                 document.getElementById('budget').value = '150';
                 document.getElementById('budgetValue').textContent = '150';
                 
                 showToast('Paracetamol example loaded successfully!', 'success');
+            } else if (example === 'cloud-seeding') {
+                document.getElementById('formulaName').value = 'Cloud Seeding Solution - Silver Iodide';
+                document.querySelector('.active-ingredient').value = 'silver-iodide';
+                document.querySelector('.active-ingredient-amount').value = '2';
+                document.getElementById('totalWeight').value = '100';
+                showToast('Cloud seeding example loaded!', 'info');
             }
         }
         
-        // Initialize on page load
+        // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             // Set default product form
             if (!document.getElementById('productForm').value) {
-                document.querySelector('.product-form-option[data-form="tablet-uncoated"]').click();
+                document.getElementById('productForm').value = 'tablet-uncoated';
             }
             
-            // Add CSS for status badges if not present
-            if (!document.querySelector('#statusStyles')) {
-                const style = document.createElement('style');
-                style.id = 'statusStyles';
-                style.textContent = `
-                    .status {
-                        padding: 5px 10px;
-                        border-radius: 15px;
-                        font-size: 0.9rem;
-                        font-weight: 600;
-                        display: inline-block;
+            // Initialize budget display
+            const budgetSlider = document.getElementById('budget');
+            const budgetValue = document.getElementById('budgetValue');
+            if (budgetSlider && budgetValue) {
+                budgetValue.textContent = budgetSlider.value;
+                budgetSlider.addEventListener('input', function() {
+                    budgetValue.textContent = this.value;
+                });
+            }
+            
+            // Initialize custom excipient field
+            const excipientName = document.getElementById('excipientName');
+            if (excipientName) {
+                excipientName.addEventListener('change', function() {
+                    const customField = document.getElementById('customExcipientName');
+                    const customLabel = document.getElementById('customNameLabel');
+                    if (this.value === 'custom') {
+                        customField.style.display = 'block';
+                        customLabel.style.display = 'block';
+                    } else {
+                        customField.style.display = 'none';
+                        customLabel.style.display = 'none';
                     }
-                    .status.success {
-                        background: #d4edda;
-                        color: #155724;
-                    }
-                    .status.warning {
-                        background: #fff3cd;
-                        color: #856404;
-                    }
-                    .status.error {
-                        background: #f8d7da;
-                        color: #721c24;
-                    }
-                `;
-                document.head.appendChild(style);
+                });
             }
         });
     </script>
-    <!-- Main JavaScript File -->
-<script src="script.js"></script>
 </body>
 </html>
