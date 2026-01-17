@@ -4,50 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>برنامج تصميم التركيبة الكيميائية المثالية الاقتصادية</title>
-    
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- CSS Files -->
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
     
     <style>
-        /* إضافات ضرورية */
-        .empty-list {
-            text-align: center;
-            padding: 30px;
-            color: #999;
+        /* Arabic-specific styles */
+        :root[lang="ar"] {
+            font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
         }
-        .empty-list i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            opacity: 0.5;
+        
+        .lang-switcher {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
         }
-        .total-percentage {
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            margin-top: 10px;
-            text-align: center;
-            font-size: 1.1rem;
-        }
-        .status {
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.9rem;
+        
+        .lang-btn {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
         }
-        .status.success {
-            background: #d4edda;
-            color: #155724;
+        
+        .lang-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
-        .total-row {
-            background: #f8f9fa;
-            font-weight: 700;
+        
+        .lang-btn i {
+            font-size: 1.2rem;
+        }
+        
+        /* RTL specific adjustments */
+        .input-with-unit input {
+            border-radius: 0 8px 8px 0 !important;
+            border-left: 2px solid #e0e0e0 !important;
+            border-right: none !important;
+            padding-right: 50px !important;
+        }
+        
+        .input-with-unit .unit {
+            border-radius: 8px 0 0 8px !important;
+            border-right: 2px solid #e0e0e0 !important;
+            border-left: none !important;
+        }
+        
+        .remove-ingredient, .remove-manual-excipient {
+            transform: none !important;
+        }
+        
+        .remove-ingredient:hover, .remove-manual-excipient:hover {
+            transform: rotate(90deg) !important;
         }
     </style>
 </head>
-<body>
+<body lang="ar">
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+        <button class="lang-btn" onclick="switchLanguage('en')">
+            <i class="fas fa-language"></i>
+            English
+        </button>
+    </div>
+
     <!-- Header -->
     <header>
         <div class="container">
@@ -461,7 +490,7 @@
                     </div>
                 </div>
                 
-                <!-- قسم النتائج الرئيسي - تم تصحيحه -->
+                <!-- قسم النتائج الرئيسي -->
                 <div id="resultsContent" class="results-content" style="display: none;">
                     <div class="formula-header">
                         <div>
@@ -469,14 +498,14 @@
                             <div class="formula-meta">
                                 <span class="meta-badge reference bp" id="referenceBadge">BP</span>
                                 <span class="meta-badge form" id="formBadge">قرص غير مغلف</span>
-                                <span><i class="far fa-calendar"></i> تاريخ التصميم: <span id="designDate">2023-10-15</span></span>
+                                <span><i class="far fa-calendar"></i> تاريخ التصميم: <span id="designDate">2024-01-17</span></span>
                             </div>
                         </div>
                         <div class="cost-badge" id="totalCost">$0.42/لكل 1000 قرص</div>
                     </div>
                     
                     <div class="formula-details">
-                        <h4>مكونات التركيبة المثالية:</h4>
+                        <h4><i class="fas fa-list-alt"></i> مكونات التركيبة المثالية:</h4>
                         <table class="formula-table" id="formulaTable">
                             <thead>
                                 <tr>
@@ -494,7 +523,14 @@
                     </div>
                     
                     <div class="formula-details">
-                        <h4>مواصفات الجودة (<span id="specsReference">BP</span>):</h4>
+                        <h4><i class="fas fa-chart-pie"></i> التوزيع النسبي</h4>
+                        <div style="max-width: 500px; margin: 20px auto;">
+                            <canvas id="formulaChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="formula-details">
+                        <h4><i class="fas fa-award"></i> مواصفات الجودة (<span id="specsReference">BP</span>):</h4>
                         <table class="specifications-table bp" id="specificationsTable">
                             <thead>
                                 <tr>
@@ -537,7 +573,7 @@
             </div>
             
             <div class="examples-grid">
-                <div class="example-card" data-example="paracetamol">
+                <div class="example-card" data-example="paracetamol" onclick="loadExample('paracetamol')">
                     <h4><i class="fas fa-tablets"></i> قرص باراسيتامول اقتصادي</h4>
                     <p>تركيبة مثالية لقرص باراسيتامول 500 مجم مع تحقيق أقل تكلفة مع الحفاظ على معايير الجودة.</p>
                     <div class="example-tags">
@@ -547,7 +583,7 @@
                     </div>
                 </div>
                 
-                <div class="example-card" data-example="cloud-seeding">
+                <div class="example-card" data-example="cloud-seeding" onclick="loadExample('cloud-seeding')">
                     <h4><i class="fas fa-cloud-rain"></i> محلول استمطار السحب</h4>
                     <p>تركيبة فعالة من يوديد الفضة مع مواد ناقلة لتحفيز هطول الأمطار بأقل تكلفة ممكنة.</p>
                     <div class="example-tags">
@@ -557,7 +593,7 @@
                     </div>
                 </div>
                 
-                <div class="example-card" data-example="paint">
+                <div class="example-card" data-example="paint" onclick="loadExample('paint')">
                     <h4><i class="fas fa-paint-roller"></i> دهان داخلي اقتصادي</h4>
                     <p>تركيبة دهان جدران داخلي عالي الجودة مع تقليل تكلفة المواد الأولية بنسبة 22%.</p>
                     <div class="example-tags">
@@ -582,12 +618,84 @@
                     <p><i class="fas fa-exclamation-triangle"></i> <strong>تنبيه:</strong> هذا البرنامج هو أداة مساعدة للتخطيط والتصميم الأولي. يجب التحقق من جميع النتائج معملياً ومراجعتها من قبل كيميائيين مؤهلين قبل التطبيق العملي. البرنامج لا يتحمل مسؤولية أي أضرار قد تنتج عن استخدام التركيبات المصممة.</p>
                 </div>
                 
-                <p>© 2023 جميع الحقوق محفوظة | تم التطوير باستخدام HTML, CSS, JavaScript</p>
+                <p>© 2024 جميع الحقوق محفوظة | تم التطوير باستخدام HTML, CSS, JavaScript</p>
             </div>
         </div>
     </footer>
     
-    <!-- JavaScript Files -->
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <!-- Main JavaScript File -->
     <script src="script.js"></script>
+    
+    <script>
+        // Language switching function
+        function switchLanguage(lang) {
+            if (lang === 'en') {
+                window.location.href = 'index.html';
+            } else {
+                window.location.href = 'index-ar.html';
+            }
+        }
+        
+        // Example loading function
+        function loadExample(example) {
+            if (example === 'paracetamol') {
+                document.getElementById('formulaName').value = 'قرص باراسيتامول 500 مجم';
+                document.getElementById('productForm').value = 'tablet-uncoated';
+                document.querySelector('.product-form-option[data-form="tablet-uncoated"]').click();
+                document.querySelector('.active-ingredient').value = 'paracetamol';
+                document.querySelector('.active-ingredient-amount').value = '500';
+                document.getElementById('primaryGoal').value = 'min-cost';
+                document.getElementById('budget').value = '150';
+                document.getElementById('budgetValue').textContent = '150';
+                
+                showToast('تم تحميل مثال الباراسيتامول بنجاح!', 'success');
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set default product form
+            if (!document.getElementById('productForm').value) {
+                document.querySelector('.product-form-option[data-form="tablet-uncoated"]').click();
+            }
+            
+            // Add CSS for status badges if not present
+            if (!document.querySelector('#statusStyles')) {
+                const style = document.createElement('style');
+                style.id = 'statusStyles';
+                style.textContent = `
+                    .status {
+                        padding: 5px 10px;
+                        border-radius: 15px;
+                        font-size: 0.9rem;
+                        font-weight: 600;
+                        display: inline-block;
+                    }
+                    .status.success {
+                        background: #d4edda;
+                        color: #155724;
+                    }
+                    .status.warning {
+                        background: #fff3cd;
+                        color: #856404;
+                    }
+                    .status.error {
+                        background: #f8d7da;
+                        color: #721c24;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            // RTL specific adjustments
+            document.querySelectorAll('.formula-table th, .specifications-table th').forEach(th => {
+                th.style.textAlign = 'right';
+            });
+        });
+    </script>
 </body>
 </html>
