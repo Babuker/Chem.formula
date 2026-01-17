@@ -1,56 +1,32 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700&display=swap" rel="stylesheet">
-  <style>
-    .professional-logo {
-      font-family: 'Montserrat', sans-serif;
-      display: inline-flex;
-      align-items: center;
-      padding: 20px;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-    .logo-icon {
-      margin-right: 20px;
-    }
-    .logo-text {
-      line-height: 1.2;
-    }
-    .logo-main {
-      font-weight: 700;
-      font-size: 24px;
-      color: #0B3D91;
-      letter-spacing: 0.5px;
-    }
-    .logo-sub {
-      font-weight: 300;
-      font-size: 24px;
-      color: #00CED1;
-      letter-spacing: 1px;
-    }
-    .logo-tagline {
-      font-size: 11px;
-      color: #666;
-      letter-spacing: 1.5px;
-      margin-top: 5px;
-      text-transform: uppercase;
-    }
-  </style>
-</head>
-<body>
-  <div class="professional-logo">
-    <div class="logo-icon">
-      <svg width="60" height="60" viewBox="0 0 128 128">
-        <!-- Insert SVG icon code here -->
-      </svg>
-    </div>
-    <div class="logo-text">
-      <div class="logo-main">CHEMICAL FORMULA</div>
-      <div class="logo-sub">OPTIMIZER</div>
-      <div class="logo-tagline">Precision Engineering</div>
-    </div>
-  </div>
-</body>
-</html>
+<svg width="128" height="128" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="badgeGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a2980"/>
+      <stop offset="100%" stop-color="#26d0ce"/>
+    </radialGradient>
+  </defs>
+  
+  <!-- Circular Badge -->
+  <circle cx="64" cy="64" r="60" fill="url(#badgeGrad)"/>
+  <circle cx="64" cy="64" r="56" fill="none" stroke="#fff" stroke-width="2" stroke-opacity="0.2"/>
+  
+  <!-- Central Icon -->
+  <g stroke="#fff" stroke-width="3" fill="none">
+    <!-- Atom Symbol -->
+    <circle cx="64" cy="64" r="24"/>
+    <circle cx="64" cy="44" r="8"/>
+    <circle cx="84" cy="74" r="8"/>
+    <circle cx="44" cy="74" r="8"/>
+    
+    <!-- Optimization Elements -->
+    <path d="M64,30 L64,20 M64,108 L64,98" stroke="#fff" stroke-width="2"/>
+    <polygon points="64,20 60,28 68,28" fill="#fff"/>
+    <polygon points="64,108 60,100 68,100" fill="#fff"/>
+  </g>
+  
+  <!-- Badge Text -->
+  <text x="64" y="120" text-anchor="middle" font-family="Arial" font-size="10" 
+        font-weight="bold" fill="#fff" letter-spacing="1">
+    CFO
+  </text>
+</svg>
