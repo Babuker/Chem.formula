@@ -1,10 +1,10 @@
 /* =========================================== */
-/* style.css - الملف الرئيسي للتنسيق */
+/* style.css - Complete CSS for Chemical Formula Optimizer */
 /* =========================================== */
 
-/* متغيرات الألوان */
+/* CSS Variables */
 :root {
-    /* الألوان الأساسية */
+    /* Primary Colors */
     --primary-color: #2c3e50;
     --secondary-color: #3498db;
     --accent-color: #e74c3c;
@@ -13,18 +13,18 @@
     --danger-color: #e74c3c;
     --info-color: #17a2b8;
     
-    /* الألوان المحايدة */
+    /* Neutral Colors */
     --light-color: #ecf0f1;
     --dark-color: #2c3e50;
     --gray-light: #f8f9fa;
     --gray-medium: #6c757d;
     --gray-dark: #343a40;
     
-    /* ألوان المراجع */
+    /* Reference Colors */
     --bp-color: #4a90e2;
     --usp-color: #9b59b6;
     
-    /* تأثيرات */
+    /* Effects */
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
     --radius: 12px;
@@ -32,7 +32,7 @@
     --transition: all 0.3s ease;
 }
 
-/* إعادة التعيين والإعدادات العامة */
+/* Reset & Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -40,43 +40,43 @@
 }
 
 body {
-    font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f5f7fa;
     color: #333;
     line-height: 1.6;
     font-size: 16px;
-    direction: rtl; /* اتجاه النص من اليمين لليسار */
 }
 
-/* الطباعة */
+/* Print Styles */
 @media print {
     body * {
         visibility: hidden;
     }
+    
     .results-content, .results-content * {
         visibility: visible;
     }
+    
     .results-content {
         position: absolute;
         left: 0;
         top: 0;
         width: 100%;
     }
-    .btn, nav, footer, .form-section {
+    
+    .btn, nav, footer, .form-section, .examples-section, .lang-switcher {
         display: none !important;
     }
 }
 
-/* الحاوية الرئيسية */
+/* Container */
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
 
-/* =========================================== */
-/* تنسيقات الهيدر */
-/* =========================================== */
+/* Header */
 header {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
@@ -166,9 +166,7 @@ nav a:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-/* =========================================== */
-/* المحتوى الرئيسي */
-/* =========================================== */
+/* Main Content Layout */
 .main-content {
     display: grid;
     grid-template-columns: 1fr 1.5fr;
@@ -182,9 +180,7 @@ nav a:hover {
     }
 }
 
-/* =========================================== */
-/* قسم النموذج */
-/* =========================================== */
+/* Form Section */
 .form-section {
     background: white;
     padding: 30px;
@@ -220,7 +216,7 @@ nav a:hover {
     font-weight: 700;
 }
 
-/* مجموعات النموذج */
+/* Form Groups */
 .form-group {
     margin-bottom: 25px;
     position: relative;
@@ -242,7 +238,7 @@ nav a:hover {
     text-align: center;
 }
 
-/* عناصر الإدخال */
+/* Form Elements */
 select, input, textarea {
     width: 100%;
     padding: 15px;
@@ -262,11 +258,11 @@ select:focus, input:focus, textarea:focus {
 
 textarea {
     resize: vertical;
-    min-height: 140px;
+    min-height: 100px;
     line-height: 1.6;
 }
 
-/* الإدخال مع الوحدة */
+/* Input with Unit */
 .input-with-unit {
     display: flex;
     align-items: center;
@@ -276,8 +272,8 @@ textarea {
 .input-with-unit input {
     flex: 1;
     border-radius: var(--radius-sm) 0 0 var(--radius-sm);
-    border-left: none;
-    padding-left: 50px;
+    border-right: none;
+    padding-right: 50px;
 }
 
 .input-with-unit .unit {
@@ -293,9 +289,7 @@ textarea {
     white-space: nowrap;
 }
 
-/* =========================================== */
-/* الأزرار */
-/* =========================================== */
+/* Buttons */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -340,7 +334,7 @@ textarea {
     font-size: 1.2rem;
 }
 
-/* أنواع الأزرار */
+/* Button Variants */
 .btn-secondary {
     background: linear-gradient(135deg, var(--gray-medium), var(--gray-dark));
 }
@@ -361,9 +355,7 @@ textarea {
     background: linear-gradient(135deg, var(--info-color), #138496);
 }
 
-/* =========================================== */
-/* المعلومات الأساسية */
-/* =========================================== */
+/* Basic Information Section */
 .basic-info-section {
     background: linear-gradient(135deg, var(--light-color), #e8f4fd);
     padding: 25px;
@@ -389,7 +381,7 @@ textarea {
     font-size: 1rem;
 }
 
-/* صفوف النموذج */
+/* Form Rows */
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -403,7 +395,7 @@ textarea {
     }
 }
 
-/* شارات المرجعية */
+/* Reference Badges */
 .reference-badges {
     display: flex;
     gap: 15px;
@@ -471,7 +463,7 @@ textarea {
     font-size: 1.2rem;
 }
 
-/* خيارات شكل المنتج */
+/* Product Form Options */
 .product-form-options {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -539,9 +531,7 @@ textarea {
     opacity: 0.8;
 }
 
-/* =========================================== */
-/* المواد الفعالة */
-/* =========================================== */
+/* Active Ingredients Section */
 .active-ingredient-section {
     background: linear-gradient(135deg, var(--light-color), #f0f8ff);
     padding: 25px;
@@ -600,9 +590,7 @@ textarea {
     box-shadow: var(--shadow);
 }
 
-/* =========================================== */
-/* طريقة الإدخال */
-/* =========================================== */
+/* Input Method Section */
 .input-method-section {
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     padding: 25px;
@@ -696,9 +684,7 @@ textarea {
     display: inline-block;
 }
 
-/* =========================================== */
-/* الإدخال اليدوي */
-/* =========================================== */
+/* Manual Input Section */
 .manual-input-section {
     display: none;
     background: linear-gradient(135deg, #fffde7, #fff9c4);
@@ -710,7 +696,7 @@ textarea {
 }
 
 .manual-input-section::before {
-    content: '👨‍🔬 الإدخال اليدوي';
+    content: '👨‍🔬 Manual Input';
     position: absolute;
     top: -18px;
     right: 20px;
@@ -833,9 +819,7 @@ textarea {
     transform: rotate(90deg);
 }
 
-/* =========================================== */
-/* الإدخال الآلي */
-/* =========================================== */
+/* Auto Input Section */
 .auto-input-section {
     display: none;
     background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
@@ -847,7 +831,7 @@ textarea {
 }
 
 .auto-input-section::before {
-    content: '🤖 الإدخال الآلي';
+    content: '🤖 Automatic Input';
     position: absolute;
     top: -18px;
     right: 20px;
@@ -940,9 +924,7 @@ textarea {
     transform: translateY(-2px);
 }
 
-/* =========================================== */
-/* قسم النتائج */
-/* =========================================== */
+/* Results Section */
 .results-section {
     background: white;
     padding: 30px;
@@ -1010,7 +992,7 @@ textarea {
 }
 
 .formula-name-display {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     color: var(--primary-color);
     font-weight: 700;
     margin-bottom: 10px;
@@ -1065,7 +1047,7 @@ textarea {
     gap: 10px;
 }
 
-/* تفاصيل الصيغة */
+/* Formula Details */
 .formula-details {
     margin-bottom: 35px;
     position: relative;
@@ -1095,23 +1077,28 @@ textarea {
     color: var(--secondary-color);
 }
 
-/* الجداول */
+.table-container {
+    overflow-x: auto;
+    margin-top: 15px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+/* Tables */
 .formula-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    margin-top: 20px;
     font-size: 0.95rem;
     border-radius: var(--radius);
     overflow: hidden;
-    box-shadow: var(--shadow);
 }
 
 .formula-table th {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
     padding: 18px 20px;
-    text-align: right;
+    text-align: left;
     font-weight: 700;
     font-size: 1rem;
     position: sticky;
@@ -1120,16 +1107,16 @@ textarea {
 }
 
 .formula-table th:first-child {
-    border-top-right-radius: var(--radius);
+    border-top-left-radius: var(--radius);
 }
 
 .formula-table th:last-child {
-    border-top-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
 }
 
 .formula-table td {
     padding: 16px 20px;
-    text-align: right;
+    text-align: left;
     border-bottom: 1px solid #eee;
     background: white;
     transition: var(--transition);
@@ -1137,7 +1124,7 @@ textarea {
 
 .formula-table tr:hover td {
     background: #f8f9fa;
-    transform: translateX(-5px);
+    transform: translateX(5px);
 }
 
 .active-ingredient-row td {
@@ -1154,18 +1141,16 @@ textarea {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    margin-top: 20px;
     font-size: 0.9rem;
     border-radius: var(--radius);
     overflow: hidden;
-    box-shadow: var(--shadow);
 }
 
 .specifications-table th {
     background: linear-gradient(135deg, var(--bp-color), #2c7dd2);
     color: white;
     padding: 15px 20px;
-    text-align: right;
+    text-align: left;
     font-weight: 700;
     font-size: 0.95rem;
     position: sticky;
@@ -1190,7 +1175,7 @@ textarea {
     background: #f0f0f0;
 }
 
-/* مقاييس الأداء */
+/* Performance Metrics */
 .performance-metrics {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -1246,9 +1231,7 @@ textarea {
     margin: 0;
 }
 
-/* =========================================== */
-/* قسم الأمثلة */
-/* =========================================== */
+/* Examples Section */
 .examples-section {
     background: white;
     padding: 30px;
@@ -1336,9 +1319,7 @@ textarea {
     box-shadow: var(--shadow);
 }
 
-/* =========================================== */
-/* الفوتر */
-/* =========================================== */
+/* Footer */
 footer {
     background: linear-gradient(135deg, var(--dark-color), #1a252f);
     color: white;
@@ -1407,87 +1388,7 @@ footer p {
     max-width: 800px;
 }
 
-/* =========================================== */
-/* التحميل والإشعارات */
-/* =========================================== */
-.loading {
-    display: none;
-    text-align: center;
-    padding: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    min-width: 300px;
-}
-
-.spinner {
-    width: 60px;
-    height: 60px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid var(--secondary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* الإشعارات */
-.toast {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background: #333;
-    color: white;
-    padding: 18px 30px;
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-hover);
-    z-index: 1000;
-    opacity: 0;
-    transform: translateY(100px);
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    max-width: 400px;
-}
-
-.toast.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.toast.success {
-    background: linear-gradient(135deg, var(--success-color), #219653);
-}
-
-.toast.error {
-    background: linear-gradient(135deg, var(--danger-color), #c0392b);
-}
-
-.toast.info {
-    background: linear-gradient(135deg, var(--info-color), #138496);
-}
-
-.toast.warning {
-    background: linear-gradient(135deg, var(--warning-color), #e67e22);
-}
-
-.toast i {
-    font-size: 1.2rem;
-}
-
-/* =========================================== */
-/* التجاوب */
-/* =========================================== */
+/* Responsive Design */
 @media (max-width: 1200px) {
     .container {
         padding: 15px;
@@ -1503,10 +1404,6 @@ footer p {
     
     nav ul {
         justify-content: center;
-    }
-    
-    .form-row {
-        grid-template-columns: 1fr;
     }
     
     .reference-badge {
@@ -1584,18 +1481,9 @@ footer p {
         padding: 15px 20px;
         font-size: 1rem;
     }
-    
-    .toast {
-        right: 15px;
-        left: 15px;
-        bottom: 15px;
-        max-width: none;
-    }
 }
 
-/* =========================================== */
-/* تأثيرات خاصة */
-/* =========================================== */
+/* Animations */
 @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
@@ -1615,7 +1503,7 @@ footer p {
     animation: slideIn 0.5s ease;
 }
 
-/* تلميحات */
+/* Tooltips */
 .tooltip {
     position: relative;
     display: inline-block;
@@ -1656,7 +1544,7 @@ footer p {
     opacity: 1;
 }
 
-/* شريط التقدم */
+/* Progress Bar */
 .progress-bar {
     width: 100%;
     height: 8px;
@@ -1673,7 +1561,7 @@ footer p {
     transition: width 0.3s ease;
 }
 
-/* بطاقات المعلومات */
+/* Info Cards */
 .info-card {
     background: linear-gradient(135deg, #e3f2fd, #bbdefb);
     border-right: 4px solid var(--info-color);
@@ -1711,10 +1599,4 @@ footer p {
 .success-card i {
     color: var(--success-color);
     margin-left: 10px;
-}
-:root {
-    --secondary-color: #1976d2;
-    --success-color: #2e7d32;
-    --dark-color: #263238;
-    --shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
