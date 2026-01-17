@@ -1,0 +1,22 @@
+<svg width="400" height="200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="80" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  
+  <!-- Molecular Structure -->
+  <circle cx="100" cy="60" r="20" fill="none" stroke="#1976d2" stroke-width="3"/>
+  <circle cx="70" cy="90" r="20" fill="none" stroke="#1976d2" stroke-width="3"/>
+  <circle cx="130" cy="90" r="20" fill="none" stroke="#1976d2" stroke-width="3"/>
+  <circle cx="100" cy="120" r="20" fill="none" stroke="#1976d2" stroke-width="3"/>
+  
+  <!-- Optimization Arrow -->
+  <path d="M100 140 L100 160 L110 150 L100 160 L90 150 Z" fill="#4caf50"/>
+  <path d="M70 70 L130 70" stroke="#4caf50" stroke-width="3"/>
+  
+  <!-- Text -->
+  <text x="220" y="80" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#1976d2">
+    Chemical Formula
+  </text>
+  <text x="220" y="110" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#4caf50">
+    Optimizer
+  </text>
+</svg>
