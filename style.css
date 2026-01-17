@@ -1712,3 +1712,9 @@ footer p {
     color: var(--success-color);
     margin-left: 10px;
 }
+:root {
+    --secondary-color: #1976d2;
+    --success-color: #2e7d32;
+    --dark-color: #263238;
+    --shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
