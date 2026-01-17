@@ -1,8 +1,5 @@
-<!-- JavaScript Libraries -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 // ===========================================
-// script.js - Complete and Working Version
+// script.js - Complete Working Version
 // Chemical Formula Optimizer v1.0
 // ===========================================
 
@@ -10,12 +7,15 @@
 let manualExcipients = [];
 let currentInputMethod = 'auto';
 let currentReference = 'bp';
-let currentProductForm = '';
+let currentProductForm = 'tablet-uncoated';
 
 // ===========================================
 // Helper Functions
 // ===========================================
 function showToast(message, type = 'info', duration = 3000) {
+    // Remove existing toasts
+    document.querySelectorAll('.toast').forEach(toast => toast.remove());
+    
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
@@ -24,81 +24,90 @@ function showToast(message, type = 'info', duration = 3000) {
     setTimeout(() => toast.classList.add('show'), 50);
     setTimeout(() => {
         toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 300);
     }, duration);
 }
 
-function format(num, d = 2) {
-    return Number(num).toFixed(d);
+function formatNumber(num, decimals = 2) {
+    return Number(num).toFixed(decimals);
 }
 
 // ===========================================
 // Page Initialization
 // ===========================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Chemical Formula Optimizer Initializing...');
+    
     // Initialize input method
     selectInputMethod('auto');
-
-    // Pharmacopeia reference selection
-    document.querySelectorAll('.reference-badge').forEach(badge => {
-        badge.addEventListener('click', () => {
-            document.querySelectorAll('.reference-badge').forEach(b => b.classList.remove('active'));
-            badge.classList.add('active');
-            currentReference = badge.dataset.reference;
+    
+    // Set up pharmacopeia reference selection
+    const referenceBadges = document.querySelectorAll('.reference-badge');
+    referenceBadges.forEach(badge => {
+        badge.addEventListener('click', function() {
+            referenceBadges.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentReference = this.dataset.reference;
             document.getElementById('reference').value = currentReference;
             showToast(`Reference set to ${currentReference.toUpperCase()}`, 'success');
         });
     });
-
-    // Product form selection
-    document.querySelectorAll('.product-form-option').forEach(option => {
-        option.addEventListener('click', () => {
-            document.querySelectorAll('.product-form-option').forEach(o => o.classList.remove('active'));
-            option.classList.add('active');
-            currentProductForm = option.dataset.form;
+    
+    // Set up product form selection
+    const productFormOptions = document.querySelectorAll('.product-form-option');
+    productFormOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            productFormOptions.forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+            currentProductForm = this.dataset.form;
             document.getElementById('productForm').value = currentProductForm;
             updateUnitLabels();
             showToast(`Product form: ${getProductFormName(currentProductForm)}`, 'info');
         });
     });
-
-    // Set default product form if none selected
-    if (!currentProductForm && document.querySelector('.product-form-option')) {
-        document.querySelector('.product-form-option[data-form="tablet-uncoated"]').click();
+    
+    // Set default product form
+    if (!currentProductForm) {
+        currentProductForm = 'tablet-uncoated';
+        document.getElementById('productForm').value = currentProductForm;
+        const defaultOption = document.querySelector('.product-form-option[data-form="tablet-uncoated"]');
+        if (defaultOption) {
+            defaultOption.classList.add('active');
+        }
     }
-
-    // Budget slider
-    const budget = document.getElementById('budget');
+    
+    // Initialize budget slider
+    const budgetSlider = document.getElementById('budget');
     const budgetValue = document.getElementById('budgetValue');
-    if (budget && budgetValue) {
-        budgetValue.textContent = budget.value;
-        budget.addEventListener('input', () => {
-            budgetValue.textContent = budget.value;
+    if (budgetSlider && budgetValue) {
+        budgetValue.textContent = budgetSlider.value;
+        budgetSlider.addEventListener('input', function() {
+            budgetValue.textContent = this.value;
         });
     }
-
-    // Update auto suggestions
-    updateAutoSuggestions();
     
-    // Custom excipient name field
+    // Initialize custom excipient field
     const excipientName = document.getElementById('excipientName');
     if (excipientName) {
         excipientName.addEventListener('change', function() {
-            const customNameField = document.getElementById('customExcipientName');
-            const customNameLabel = document.getElementById('customNameLabel');
-            
+            const customField = document.getElementById('customExcipientName');
+            const customLabel = document.getElementById('customNameLabel');
             if (this.value === 'custom') {
-                customNameField.style.display = 'block';
-                customNameLabel.style.display = 'block';
-                customNameField.required = true;
+                customField.style.display = 'block';
+                customLabel.style.display = 'block';
+                customField.required = true;
             } else {
-                customNameField.style.display = 'none';
-                customNameLabel.style.display = 'none';
-                customNameField.required = false;
+                customField.style.display = 'none';
+                customLabel.style.display = 'none';
+                customField.required = false;
             }
         });
     }
-
+    
     // Auto settings listeners
     const autoSettings = ['costStrategy', 'productionStrategy', 'performancePriority'];
     autoSettings.forEach(id => {
@@ -107,14 +116,17 @@ document.addEventListener('DOMContentLoaded', () => {
             element.addEventListener('change', updateAutoSuggestions);
         }
     });
-
-    // Form submission
+    
+    // Form submission handler
     const formulaForm = document.getElementById('formulaForm');
     if (formulaForm) {
         formulaForm.addEventListener('submit', handleFormSubmit);
     }
-
-    console.log('Chemical Formula Optimizer initialized successfully!');
+    
+    // Update auto suggestions
+    updateAutoSuggestions();
+    
+    console.log('Chemical Formula Optimizer Initialized Successfully!');
 });
 
 // ===========================================
@@ -161,51 +173,71 @@ function addIngredientRow() {
     
     const row = document.createElement('div');
     row.className = 'ingredient-row';
+    
+    const isRTL = document.documentElement.dir === 'rtl';
+    
     row.innerHTML = `
         <select class="active-ingredient" required>
-            <option value="">${document.documentElement.dir === 'rtl' ? 'اختر المادة الفعالة...' : 'Select Active Ingredient...'}</option>
-            <option value="paracetamol">${document.documentElement.dir === 'rtl' ? 'باراسيتامول' : 'Paracetamol'}</option>
-            <option value="ibuprofen">${document.documentElement.dir === 'rtl' ? 'آيبوبروفين' : 'Ibuprofen'}</option>
-            <option value="amoxicillin">${document.documentElement.dir === 'rtl' ? 'أموكسيسيلين' : 'Amoxicillin'}</option>
-            <option value="silver-iodide">${document.documentElement.dir === 'rtl' ? 'يوديد الفضة' : 'Silver Iodide'}</option>
-            <option value="titanium-dioxide">${document.documentElement.dir === 'rtl' ? 'ثاني أكسيد التيتانيوم' : 'Titanium Dioxide'}</option>
-            <option value="vitamin-c">${document.documentElement.dir === 'rtl' ? 'فيتامين ج' : 'Vitamin C'}</option>
+            <option value="">${isRTL ? 'اختر المادة الفعالة...' : 'Select Active Ingredient...'}</option>
+            <option value="paracetamol">${isRTL ? 'باراسيتامول' : 'Paracetamol'}</option>
+            <option value="ibuprofen">${isRTL ? 'آيبوبروفين' : 'Ibuprofen'}</option>
+            <option value="amoxicillin">${isRTL ? 'أموكسيسيلين' : 'Amoxicillin'}</option>
+            <option value="silver-iodide">${isRTL ? 'يوديد الفضة' : 'Silver Iodide'}</option>
+            <option value="titanium-dioxide">${isRTL ? 'ثاني أكسيد التيتانيوم' : 'Titanium Dioxide'}</option>
+            <option value="vitamin-c">${isRTL ? 'فيتامين ج' : 'Vitamin C'}</option>
         </select>
         
         <div class="input-with-unit">
             <input type="number" class="active-ingredient-amount" min="0.1" step="0.1" value="500" required>
-            <div class="unit">${document.documentElement.dir === 'rtl' ? 'مجم' : 'mg'}</div>
+            <div class="unit">${isRTL ? 'مجم' : 'mg'}</div>
         </div>
         
         <button type="button" class="remove-ingredient" onclick="removeIngredientRow(this)">
             <i class="fas fa-times"></i>
         </button>
     `;
+    
     container.appendChild(row);
     
-    showToast(document.documentElement.dir === 'rtl' ? 'تمت إضافة صف جديد للمادة الفعالة' : 'New active ingredient row added', 'success');
+    showToast(
+        isRTL ? 'تمت إضافة صف جديد للمادة الفعالة' : 'New active ingredient row added',
+        'success'
+    );
 }
 
-function removeIngredientRow(btn) {
+function removeIngredientRow(button) {
     const rows = document.querySelectorAll('.ingredient-row');
     if (rows.length > 1) {
-        btn.closest('.ingredient-row').remove();
-        showToast(document.documentElement.dir === 'rtl' ? 'تم إزالة صف المادة الفعالة' : 'Active ingredient row removed', 'info');
+        button.closest('.ingredient-row').remove();
+        showToast(
+            document.documentElement.dir === 'rtl' 
+                ? 'تم إزالة صف المادة الفعالة' 
+                : 'Active ingredient row removed',
+            'info'
+        );
     } else {
-        showToast(document.documentElement.dir === 'rtl' ? 'يجب أن يكون هناك مادة فعالة واحدة على الأقل' : 'At least one active ingredient is required', 'warning');
+        showToast(
+            document.documentElement.dir === 'rtl' 
+                ? 'يجب أن يكون هناك مادة فعالة واحدة على الأقل' 
+                : 'At least one active ingredient is required',
+            'warning'
+        );
     }
 }
 
 function getActiveIngredients() {
-    const list = [];
+    const ingredients = [];
     document.querySelectorAll('.ingredient-row').forEach(row => {
         const name = row.querySelector('.active-ingredient').value;
         const amount = row.querySelector('.active-ingredient-amount').value;
         if (name && amount) {
-            list.push({ name, amount: parseFloat(amount) });
+            ingredients.push({ 
+                name: name, 
+                amount: parseFloat(amount) 
+            });
         }
     });
-    return list;
+    return ingredients;
 }
 
 // ===========================================
@@ -215,6 +247,7 @@ function selectInputMethod(method) {
     currentInputMethod = method;
     document.getElementById('inputMethod').value = method;
     
+    // Update UI
     document.getElementById('manualInputSection').style.display = method === 'manual' ? 'block' : 'none';
     document.getElementById('autoInputSection').style.display = method === 'auto' ? 'block' : 'none';
     
@@ -233,19 +266,20 @@ function selectInputMethod(method) {
 // Manual Excipients Management
 // ===========================================
 function addManualExcipient() {
-    const nameSel = document.getElementById('excipientName');
-    const funcSel = document.getElementById('excipientFunction');
-    const percInput = document.getElementById('excipientPercentage');
+    const nameSelect = document.getElementById('excipientName');
+    const functionSelect = document.getElementById('excipientFunction');
+    const percentageInput = document.getElementById('excipientPercentage');
     
-    if (!nameSel || !funcSel || !percInput) {
+    if (!nameSelect || !functionSelect || !percentageInput) {
         showToast('System error: Form elements not found', 'error');
         return;
     }
     
-    const name = nameSel.value;
-    const perc = parseFloat(percInput.value);
+    const name = nameSelect.value;
+    const percentage = parseFloat(percentageInput.value);
     
-    if (!name || !perc || perc <= 0) {
+    // Validation
+    if (!name || !percentage || percentage <= 0) {
         showToast(
             document.documentElement.dir === 'rtl' 
                 ? 'يرجى إدخال جميع البيانات بشكل صحيح'
@@ -255,7 +289,7 @@ function addManualExcipient() {
         return;
     }
     
-    let displayName = nameSel.options[nameSel.selectedIndex].text;
+    let displayName = nameSelect.options[nameSelect.selectedIndex].text;
     
     // Handle custom excipient
     if (name === 'custom') {
@@ -276,17 +310,17 @@ function addManualExcipient() {
         id: Date.now(),
         name: name,
         displayName: displayName,
-        function: funcSel.value,
-        functionText: funcSel.options[funcSel.selectedIndex].text,
-        percentage: perc
+        function: functionSelect.value,
+        functionText: functionSelect.options[functionSelect.selectedIndex].text,
+        percentage: percentage
     };
     
     manualExcipients.push(excipient);
     updateManualExcipientsList();
     
     // Reset form
-    nameSel.value = '';
-    percInput.value = '5';
+    nameSelect.value = '';
+    percentageInput.value = '5';
     document.getElementById('customExcipientName').style.display = 'none';
     document.getElementById('customNameLabel').style.display = 'none';
     
@@ -305,14 +339,15 @@ function updateManualExcipientsList() {
     if (!listElement || !countElement) return;
     
     if (manualExcipients.length === 0) {
+        const isRTL = document.documentElement.dir === 'rtl';
         listElement.innerHTML = `
             <div style="text-align: center; padding: 30px; color: #999;">
                 <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                <p>${document.documentElement.dir === 'rtl' ? 'لم يتم إضافة أي مواد مساعدة بعد' : 'No excipients added yet'}</p>
-                <small>${document.documentElement.dir === 'rtl' ? 'استخدم النموذج أعلاه لإضافة المواد' : 'Use the form above to add excipients'}</small>
+                <p>${isRTL ? 'لم يتم إضافة أي مواد مساعدة بعد' : 'No excipients added yet'}</p>
+                <small>${isRTL ? 'استخدم النموذج أعلاه لإضافة المواد' : 'Use the form above to add excipients'}</small>
             </div>
         `;
-        countElement.textContent = document.documentElement.dir === 'rtl' ? '(0 مادة)' : '(0 items)';
+        countElement.textContent = isRTL ? '(0 مادة)' : '(0 items)';
         return;
     }
     
@@ -335,7 +370,8 @@ function updateManualExcipientsList() {
     });
     
     listElement.innerHTML = html;
-    countElement.textContent = document.documentElement.dir === 'rtl' 
+    const isRTL = document.documentElement.dir === 'rtl';
+    countElement.textContent = isRTL 
         ? `(${manualExcipients.length} مادة)` 
         : `(${manualExcipients.length} items)`;
 }
@@ -352,7 +388,8 @@ function removeManualExcipient(id) {
 function clearManualExcipients() {
     if (manualExcipients.length === 0) return;
     
-    const message = document.documentElement.dir === 'rtl' 
+    const isRTL = document.documentElement.dir === 'rtl';
+    const message = isRTL 
         ? 'هل أنت متأكد من مسح جميع المواد المضافة؟'
         : 'Are you sure you want to clear all excipients?';
     
@@ -360,7 +397,7 @@ function clearManualExcipients() {
         manualExcipients = [];
         updateManualExcipientsList();
         showToast(
-            document.documentElement.dir === 'rtl' ? 'تم مسح جميع المواد' : 'All excipients cleared',
+            isRTL ? 'تم مسح جميع المواد' : 'All excipients cleared',
             'info'
         );
     }
@@ -368,6 +405,7 @@ function clearManualExcipients() {
 
 function loadCommonFormulation() {
     const productForm = document.getElementById('productForm').value || 'tablet-uncoated';
+    const isRTL = document.documentElement.dir === 'rtl';
     
     manualExcipients = [];
     
@@ -376,33 +414,33 @@ function loadCommonFormulation() {
             {
                 id: Date.now(),
                 name: 'mcc',
-                displayName: document.documentElement.dir === 'rtl' ? 'سليولوز ميكروكريستاليني (MCC)' : 'Microcrystalline Cellulose (MCC)',
+                displayName: isRTL ? 'سليولوز ميكروكريستاليني (MCC)' : 'Microcrystalline Cellulose (MCC)',
                 function: 'filler',
-                functionText: document.documentElement.dir === 'rtl' ? 'مادة مالئة' : 'Filler',
+                functionText: isRTL ? 'مادة مالئة' : 'Filler',
                 percentage: 30
             },
             {
                 id: Date.now() + 1,
                 name: 'povidone',
-                displayName: document.documentElement.dir === 'rtl' ? 'بوفيدون K30' : 'Povidone K30',
+                displayName: isRTL ? 'بوفيدون K30' : 'Povidone K30',
                 function: 'binder',
-                functionText: document.documentElement.dir === 'rtl' ? 'مادة رابطة' : 'Binder',
+                functionText: isRTL ? 'مادة رابطة' : 'Binder',
                 percentage: 2
             },
             {
                 id: Date.now() + 2,
                 name: 'croscarmellose',
-                displayName: document.documentElement.dir === 'rtl' ? 'صوديوم كروكارميلوز' : 'Sodium Croscarmellose',
+                displayName: isRTL ? 'صوديوم كروكارميلوز' : 'Sodium Croscarmellose',
                 function: 'disintegrant',
-                functionText: document.documentElement.dir === 'rtl' ? 'مادة مفككة' : 'Disintegrant',
+                functionText: isRTL ? 'مادة مفككة' : 'Disintegrant',
                 percentage: 1.5
             },
             {
                 id: Date.now() + 3,
                 name: 'magnesium-stearate',
-                displayName: document.documentElement.dir === 'rtl' ? 'ستيرات المغنيسيوم' : 'Magnesium Stearate',
+                displayName: isRTL ? 'ستيرات المغنيسيوم' : 'Magnesium Stearate',
                 function: 'lubricant',
-                functionText: document.documentElement.dir === 'rtl' ? 'مادة مزلقة' : 'Lubricant',
+                functionText: isRTL ? 'مادة مزلقة' : 'Lubricant',
                 percentage: 0.5
             }
         ];
@@ -411,17 +449,17 @@ function loadCommonFormulation() {
             {
                 id: Date.now(),
                 name: 'lactose',
-                displayName: document.documentElement.dir === 'rtl' ? 'لاكتوز اللامائي' : 'Anhydrous Lactose',
+                displayName: isRTL ? 'لاكتوز اللامائي' : 'Anhydrous Lactose',
                 function: 'filler',
-                functionText: document.documentElement.dir === 'rtl' ? 'مادة مالئة' : 'Filler',
+                functionText: isRTL ? 'مادة مالئة' : 'Filler',
                 percentage: 35
             },
             {
                 id: Date.now() + 1,
                 name: 'magnesium-stearate',
-                displayName: document.documentElement.dir === 'rtl' ? 'ستيرات المغنيسيوم' : 'Magnesium Stearate',
+                displayName: isRTL ? 'ستيرات المغنيسيوم' : 'Magnesium Stearate',
                 function: 'lubricant',
-                functionText: document.documentElement.dir === 'rtl' ? 'مادة مزلقة' : 'Lubricant',
+                functionText: isRTL ? 'مادة مزلقة' : 'Lubricant',
                 percentage: 0.5
             }
         ];
@@ -429,7 +467,7 @@ function loadCommonFormulation() {
     
     updateManualExcipientsList();
     showToast(
-        document.documentElement.dir === 'rtl' 
+        isRTL 
             ? 'تم تحميل تركيبة شائعة بناءً على نوع المنتج'
             : 'Common formulation loaded based on product type',
         'success'
@@ -445,17 +483,18 @@ function updateAutoSuggestions() {
     const performancePriority = document.getElementById('performancePriority')?.value || 'sustained-release';
     
     let suggestions = [];
+    const isRTL = document.documentElement.dir === 'rtl';
     
     if (costStrategy === 'lowest') {
-        suggestions = document.documentElement.dir === 'rtl' 
+        suggestions = isRTL 
             ? ['نشا الذرة', 'لاكتوز', 'ستيرات مغنيسيوم', 'نشا صوديوم جليكولات']
             : ['Corn Starch', 'Lactose', 'Magnesium Stearate', 'Sodium Starch Glycolate'];
     } else if (costStrategy === 'balanced') {
-        suggestions = document.documentElement.dir === 'rtl' 
+        suggestions = isRTL 
             ? ['سليولوز ميكروكريستاليني', 'بوفيدون', 'كروسكارميلوز', 'ستيرات مغنيسيوم']
             : ['Microcrystalline Cellulose', 'Povidone', 'Croscarmellose', 'Magnesium Stearate'];
     } else {
-        suggestions = document.documentElement.dir === 'rtl' 
+        suggestions = isRTL 
             ? ['مانيتول', 'هيدروكسي بروبيل ميثيل سليولوز', 'كروسپوفيدون', 'ثاني أكسيد السيليكون']
             : ['Mannitol', 'HPMC', 'Crospovidone', 'Silicon Dioxide'];
     }
@@ -562,8 +601,8 @@ function generateAutoExcipients() {
 // ===========================================
 // Form Submission Handler
 // ===========================================
-function handleFormSubmit(e) {
-    e.preventDefault();
+function handleFormSubmit(event) {
+    event.preventDefault();
     
     // Get form values
     const formulaName = document.getElementById('formulaName').value;
@@ -935,6 +974,13 @@ function renderPieChart(activeIngredients, excipients) {
     const canvas = document.getElementById('formulaChart');
     if (!canvas) return;
     
+    // Check if Chart.js is loaded
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js is not loaded');
+        showToast('Chart library not loaded. Please check your internet connection.', 'error');
+        return;
+    }
+    
     const ctx = canvas.getContext('2d');
     
     // Prepare data
@@ -958,61 +1004,61 @@ function renderPieChart(activeIngredients, excipients) {
         data.push(ex.percentage);
     });
     
-    // Check if Chart is available
-    if (typeof Chart === 'undefined') {
-        console.error('Chart.js library not loaded');
-        return;
-    }
-    
     // Destroy existing chart if exists
     if (canvas.chart) {
         canvas.chart.destroy();
     }
     
     // Create new chart
-    canvas.chart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: labels,
-            datasets: [{
-                data: data,
-                backgroundColor: backgroundColors.slice(0, labels.length),
-                borderWidth: 2,
-                borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    rtl: document.documentElement.dir === 'rtl',
-                    labels: {
+    try {
+        canvas.chart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColors.slice(0, labels.length),
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        rtl: document.documentElement.dir === 'rtl',
+                        labels: {
+                            font: {
+                                size: 11,
+                                family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+                            },
+                            padding: 20
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: document.documentElement.dir === 'rtl' ? 'توزيع مكونات التركيبة' : 'Formulation Components Distribution',
                         font: {
-                            size: 11,
-                            family: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif'
+                            size: 16
                         },
                         padding: 20
                     }
-                },
-                title: {
-                    display: true,
-                    text: document.documentElement.dir === 'rtl' ? 'توزيع مكونات التركيبة' : 'Formulation Components Distribution',
-                    font: {
-                        size: 16
-                    },
-                    padding: 20
                 }
             }
-        }
-    });
+        });
+    } catch (error) {
+        console.error('Error creating chart:', error);
+        showToast('Error creating chart. Please try again.', 'error');
+    }
 }
 
 // ===========================================
 // Export Functions
 // ===========================================
 function exportResults() {
+    // Check if html2pdf is loaded
     if (typeof html2pdf === 'undefined') {
         showToast(
             document.documentElement.dir === 'rtl' 
@@ -1049,12 +1095,19 @@ function exportResults() {
         }
     };
     
-    html2pdf().set(opt).from(element).save();
-    
-    showToast(
-        isRTL ? 'تم تصدير التقرير بنجاح' : 'Report exported successfully',
-        'success'
-    );
+    try {
+        html2pdf().set(opt).from(element).save();
+        showToast(
+            isRTL ? 'تم تصدير التقرير بنجاح' : 'Report exported successfully',
+            'success'
+        );
+    } catch (error) {
+        console.error('Export error:', error);
+        showToast(
+            isRTL ? 'حدث خطأ أثناء التصدير' : 'Error during export',
+            'error'
+        );
+    }
 }
 
 function saveFormula() {
@@ -1084,7 +1137,7 @@ function printResults() {
 }
 
 // ===========================================
-// Global Functions for HTML onclick
+// Make Functions Available Globally
 // ===========================================
 window.selectInputMethod = selectInputMethod;
 window.addIngredientRow = addIngredientRow;
