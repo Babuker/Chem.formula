@@ -1,58 +1,56 @@
-<svg width="400" height="160" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 160">
-  <!-- Professional Gradient Background for Icon -->
-  <defs>
-    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0052D4"/>
-      <stop offset="100%" stop-color="#4364F7"/>
-    </linearGradient>
-    <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00b09b"/>
-      <stop offset="100%" stop-color="#96c93d"/>
-    </linearGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-opacity="0.15"/>
-    </filter>
-  </defs>
-
-  <!-- Logo Icon Container -->
-  <g filter="url(#shadow)">
-    <!-- Molecular Core (Hexagon) -->
-    <path d="M50,80 L60,60 L80,50 L100,60 L110,80 L100,100 L80,110 L60,100 Z" 
-          fill="url(#blueGradient)" stroke="#fff" stroke-width="2"/>
-    
-    <!-- Optimization Circuit Integration -->
-    <path d="M65,65 L95,95 M95,65 L65,95" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-    
-    <!-- Optimization Arrows -->
-    <path d="M45,80 L30,80 L35,75 L30,80 L35,85" fill="url(#greenGradient)"/>
-    <path d="M115,80 L130,80 L125,75 L130,80 L125,85" fill="url(#greenGradient)"/>
-    
-    <!-- Central Data Node -->
-    <circle cx="80" cy="80" r="8" fill="#fff"/>
-    <circle cx="80" cy="80" r="4" fill="url(#greenGradient)"/>
-  </g>
-
-  <!-- Professional Typography -->
-  <g>
-    <!-- Main Title -->
-    <text x="150" y="65" font-family="'Helvetica Neue', Arial, sans-serif" 
-          font-size="28" font-weight="600" letter-spacing="0.5" fill="#2C3E50">
-      CHEMICAL FORMULA
-    </text>
-    
-    <!-- Subtitle with Accent -->
-    <text x="150" y="95" font-family="'Helvetica Neue', Arial, sans-serif" 
-          font-size="28" font-weight="300" letter-spacing="1" fill="#2C3E50">
-      OPTIMIZER
-    </text>
-    
-    <!-- Professional Tagline -->
-    <text x="150" y="120" font-family="'Helvetica Neue', Arial, sans-serif" 
-          font-size="12" font-weight="300" letter-spacing="1.5" fill="#7F8C8D">
-      PRECISION · EFFICIENCY · INNOVATION
-    </text>
-    
-    <!-- Accent Line -->
-    <line x1="150" y1="100" x2="340" y2="100" stroke="url(#greenGradient)" stroke-width="3"/>
-  </g>
-</svg>
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700&display=swap" rel="stylesheet">
+  <style>
+    .professional-logo {
+      font-family: 'Montserrat', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .logo-icon {
+      margin-right: 20px;
+    }
+    .logo-text {
+      line-height: 1.2;
+    }
+    .logo-main {
+      font-weight: 700;
+      font-size: 24px;
+      color: #0B3D91;
+      letter-spacing: 0.5px;
+    }
+    .logo-sub {
+      font-weight: 300;
+      font-size: 24px;
+      color: #00CED1;
+      letter-spacing: 1px;
+    }
+    .logo-tagline {
+      font-size: 11px;
+      color: #666;
+      letter-spacing: 1.5px;
+      margin-top: 5px;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="professional-logo">
+    <div class="logo-icon">
+      <svg width="60" height="60" viewBox="0 0 128 128">
+        <!-- Insert SVG icon code here -->
+      </svg>
+    </div>
+    <div class="logo-text">
+      <div class="logo-main">CHEMICAL FORMULA</div>
+      <div class="logo-sub">OPTIMIZER</div>
+      <div class="logo-tagline">Precision Engineering</div>
+    </div>
+  </div>
+</body>
+</html>
