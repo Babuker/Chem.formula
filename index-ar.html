@@ -3,257 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام مُحسن التركيبات الدوائية الذكي</title>
+    <title>مُحسن التركيبات الدوائية</title>
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* التنسيق الداخلي لضمان عمل الملف بشكل مستقل واحترافي */
-        :root {
-            --primary-color: #004d40;
-            --accent-color: #00c853;
-            --bg-color: #f0f4f8;
-            --card-bg: #ffffff;
-            --text-color: #333;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-            color: var(--text-color);
-        }
-
-        .header {
-            background: linear-gradient(135deg, var(--primary-color), #00796b);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: -40px auto 40px;
-            padding: 20px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-            border-right: 6px solid var(--accent-color);
-        }
-
-        h2, h3 { color: var(--primary-color); }
-
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; }
-        
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: 0.3s;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--accent-color);
-            outline: none;
-        }
-
-        .btn-main {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(0,200,83,0.3);
-        }
-
-        .btn-main:hover {
-            background-color: #00a041;
-            transform: translateY(-2px);
-        }
-
-        /* تنسيق جدول النتائج */
-        .pharma-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .pharma-table th, .pharma-table td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            text-align: right;
-        }
-
-        .pharma-table th { background-color: #f8f9fa; }
-
-        .summary-box {
-            background: #e8f5e9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border: 1px dashed var(--accent-color);
-        }
-
-        @media print {
-            .header, .btn-main, .input-panel { display: none; }
-            .card { border: none; box-shadow: none; }
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/pharma-styles.css">
 </head>
 <body>
-
-    <header class="header">
-        <h1><i class="fas fa-microscope"></i> نظام تحسين الصياغة الدوائية</h1>
-        <p>الجيل القادم من أنظمة تخطيط الإنتاج الصيدلاني (AI-Powered)</p>
+    <header class="main-header" style="background: linear-gradient(135deg, #004d40, #00796b);">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1><i class="fas fa-pills"></i> برو فارما</h1>
+                <a href="index.html" class="lang-switch">English <i class="fas fa-globe"></i></a>
+            </div>
+        </div>
     </header>
 
-    <div class="container">
-        <div class="card input-panel">
-            <h3><i class="fas fa-edit"></i> مدخلات التشغيلة</h3>
-            <form id="optimizerForm">
-                <div class="input-group">
+    <main class="container">
+        <div class="grid-layout">
+            <section class="card">
+                <h3><i class="fas fa-microscope"></i> مدخلات الصياغة</h3>
+                <form id="pharmaForm">
                     <label>المادة الفعالة (API):</label>
-                    <select id="apiSelector">
-                        <option value="paracetamol">Paracetamol (باراسيتامول)</option>
-                        <option value="ibuprofen">Ibuprofen (إيبوبروفين)</option>
+                    <select id="apiName">
+                        <option value="paracetamol">باراسيتامول</option>
+                        <option value="ibuprofen">إيبوبروفين</option>
                     </select>
-                </div>
-                
-                <div style="display: flex; gap: 15px;">
-                    <div class="input-group" style="flex: 1;">
-                        <label>وزن القرص المستهدف (mg):</label>
-                        <input type="number" id="targetWeight" value="700">
-                    </div>
-                    <div class="input-group" style="flex: 1;">
-                        <label>حجم التشغيلة (Batch Size):</label>
-                        <input type="number" id="batchSize" value="100000">
-                    </div>
-                </div>
+                    <label>وزن القرص المستهدف (mg):</label>
+                    <input type="number" id="targetWeight" value="700">
+                    <label>حجم التشغيلة (عدد الأقراص):</label>
+                    <input type="number" id="batchSize" value="100000">
+                    <button type="submit" class="btn-optimize">بدء التحليل الذكي</button>
+                </form>
+            </section>
 
-                <button type="submit" class="btn-main">
-                    <i class="fas fa-magic"></i> تحليل وتحسين التركيبة
-                </button>
-            </form>
+            <section id="resultsContent" class="card" style="display:none;">
+                <div id="resultOutput"></div>
+            </section>
         </div>
+    </main>
 
-        <div id="resultCard" class="card" style="display: none;">
-            <div id="outputArea"></div>
-            <button onclick="window.print()" class="btn-main" style="background-color: var(--primary-color); margin-top: 20px;">
-                <i class="fas fa-file-pdf"></i> طباعة تقرير الصياغة والتكلفة
-            </button>
-        </div>
-    </div>
-
-    <script>
-        // 1. قاعدة البيانات المدمجة
-        const db = {
-            apis: {
-                "paracetamol": { 
-                    name: "Paracetamol", 
-                    standardWeight: 500, 
-                    pricePerKg: 12.5,
-                    incompatibility: "البيئات عالية الرطوبة والقواعد القوية",
-                    excipients: ["MCC PH-102", "PVP K30", "Magnesium Stearate"]
-                },
-                "ibuprofen": { 
-                    name: "Ibuprofen", 
-                    standardWeight: 400, 
-                    pricePerKg: 19.0,
-                    incompatibility: "الأمينات ومضادات الحموضة القوية",
-                    excipients: ["Lactose DCL-11", "Croscarmellose", "Talc"]
-                }
-            },
-            excipients: {
-                "MCC PH-102": { role: "Filler/Binder", price: 4.5 },
-                "PVP K30": { role: "Binder", price: 9.8 },
-                "Magnesium Stearate": { role: "Lubricant", price: 7.2 },
-                "Lactose DCL-11": { role: "Filler", price: 3.5 },
-                "Croscarmellose": { role: "Disintegrant", price: 11.2 },
-                "Talc": { role: "Glidant", price: 2.8 }
-            }
-        };
-
-        // 2. محرك التحليل والذكاء الاصطناعي
-        document.getElementById('optimizerForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const apiId = document.getElementById('apiSelector').value;
-            const targetW = parseFloat(document.getElementById('targetWeight').value);
-            const batch = parseInt(document.getElementById('batchSize').value);
-            
-            const api = db.apis[apiId];
-            let results = [];
-            let totalBatchCost = 0;
-
-            // حساب المادة الفعالة
-            let apiQtyKg = (api.standardWeight * batch) / 1000000;
-            let apiCost = apiQtyKg * api.pricePerKg;
-            totalBatchCost += apiCost;
-            results.push({ name: api.name, mg: api.standardWeight, kg: apiQtyKg.toFixed(3), cost: apiCost.toFixed(2), role: "المادة الفعالة" });
-
-            // حساب المكونات المضافة تلقائياً
-            let remaining = targetW - api.standardWeight;
-            api.excipients.forEach((exName, index) => {
-                let exData = db.excipients[exName];
-                let exMg = (index === api.excipients.length - 1) ? remaining : remaining * 0.4;
-                remaining -= exMg;
-
-                let exKg = (exMg * batch) / 1000000;
-                let exCost = exKg * exData.price;
-                totalBatchCost += exCost;
-
-                results.push({ name: exName, mg: exMg.toFixed(1), kg: exKg.toFixed(3), cost: exCost.toFixed(2), role: exData.role });
-            });
-
-            renderUI(results, totalBatchCost, api.incompatibility);
-        });
-
-        // 3. عرض النتائج في الواجهة
-        function renderUI(results, totalCost, alert) {
-            const container = document.getElementById('resultCard');
-            const output = document.getElementById('outputArea');
-            
-            let tableHTML = `
-                <h3>نتائج التحسين الذكي للتركيبة:</h3>
-                <table class="pharma-table">
-                    <thead>
-                        <tr><th>المكون</th><th>للقرص (mg)</th><th>للتشغيلة (kg)</th><th>التكلفة ($)</th><th>الوظيفة</th></tr>
-                    </thead>
-                    <tbody>
-                        ${results.map(r => `
-                            <tr>
-                                <td><strong>${r.name}</strong></td>
-                                <td>${r.mg}</td>
-                                <td>${r.kg}</td>
-                                <td>${r.cost}</td>
-                                <td>${r.role}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-                <div class="summary-box">
-                    <p><strong><i class="fas fa-dollar-sign"></i> إجمالي تكلفة المواد للتشغيلة:</strong> ${totalCost.toFixed(2)} $</p>
-                    <p style="color: #c62828;"><strong><i class="fas fa-exclamation-triangle"></i> تنبيه الثبات:</strong> تجنب ${alert}</p>
-                </div>
-            `;
-            
-            output.innerHTML = tableHTML;
-            container.style.display = 'block';
-            window.scrollTo({ top: container.offsetTop, behavior: 'smooth' });
-        }
-    </script>
+    <script src="app/database/chemical-formula-database.js"></script>
+    <script src="app/optimization/ai-optimizer.js"></script>
 </body>
 </html>
