@@ -1,70 +1,101 @@
-const aiWeight = document.getElementById("aiWeight");
-const aiName = document.getElementById("aiName");
-const totalWeight = document.getElementById("totalWeight");
-const materials = document.getElementById("materials");
-const status = document.getElementById("status");
-const modes = document.querySelectorAll("input[name='mode']");
+// script.js - منطق برنامج تصميم التركيبة الكيميائية
 
-let chart;
+document.addEventListener('DOMContentLoaded', () => {
+    const formulaForm = document.getElementById('formulaForm');
+    const resultsPlaceholder = document.getElementById('resultsPlaceholder');
+    const resultsContent = document.getElementById('resultsContent');
 
-document.getElementById("addMaterial").onclick = () => {
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td><input></td>
-    <td><input type="number" step="0.01" class="mw"></td>`;
-  materials.appendChild(tr);
-};
+    // 1. التعامل مع اختيار "شكل المنتج"
+    const productOptions = document.querySelectorAll('.product-form-option');
+    productOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            productOptions.forEach(opt => opt.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById('productForm').value = this.dataset.form;
+        });
+    });
 
-function calculate() {
-  const ai = Number(aiWeight.value) || 0;
-  let others = 0;
-  document.querySelectorAll(".mw").forEach(i => others += Number(i.value) || 0);
+    // 2. وظيفة إضافة صف مادة فعالة جديدة
+    window.addIngredientRow = function() {
+        const container = document.getElementById('activeIngredientsContainer');
+        const newRow = document.createElement('div');
+        newRow.className = 'ingredient-row';
+        newRow.innerHTML = `
+            <select class="active-ingredient" required>
+                <option value="">اختر المادة الفعالة...</option>
+                <option value="paracetamol">باراسيتامول</option>
+                <option value="ibuprofen">آيبوبروفين</option>
+                <option value="custom">مادة مخصصة...</option>
+            </select>
+            <div class="input-with-unit">
+                <input type="number" class="active-ingredient-amount" value="500" required>
+                <div class="unit">مجم</div>
+            </div>
+            <button type="button" class="remove-ingredient" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        container.appendChild(newRow);
+    };
 
-  const mode = [...modes].find(r => r.checked).value;
+    // 3. منطق التبديل بين الإدخال اليدوي والآلي
+    window.selectInputMethod = function(method) {
+        const manualSection = document.getElementById('manualInputSection');
+        const autoSection = document.getElementById('autoInputSection');
+        const manualOpt = document.getElementById('manualOption');
+        const autoOpt = document.getElementById('autoOption');
 
-  if (mode === "manual") {
-    const total = Number(totalWeight.value) || 0;
-    if (ai + others > total) {
-      status.textContent = "❌ Invalid formulation";
-      return;
-    }
-    status.textContent = `✔ Remaining: ${(total - ai - others).toFixed(2)} kg`;
-  } else {
-    totalWeight.value = (ai + others).toFixed(2);
-    totalWeight.disabled = true;
-    status.textContent = "✔ Auto calculation applied";
-  }
+        if (method === 'manual') {
+            manualSection.style.display = 'block';
+            autoSection.style.display = 'none';
+            manualOpt.classList.add('selected');
+            autoOpt.classList.remove('selected');
+        } else {
+            manualSection.style.display = 'none';
+            autoSection.style.display = 'block';
+            autoOpt.classList.add('selected');
+            manualOpt.classList.remove('selected');
+        }
+        document.getElementById('inputMethod').value = method;
+    };
 
-  drawChart();
-}
+    // 4. محاكاة حساب التركيبة المثالية عند إرسال النموذج
+    formulaForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // إظهار قسم النتائج وإخفاء الرسالة الترحيبية
+        resultsPlaceholder.style.display = 'none';
+        resultsContent.style.display = 'block';
 
-function drawChart() {
-  const labels = [aiName.value || "Active Ingredient"];
-  const data = [Number(aiWeight.value) || 0];
+        // تحديث البيانات الأساسية في الواجهة
+        document.getElementById('formulaNameDisplay').innerText = document.getElementById('formulaName').value;
+        document.getElementById('designDate').innerText = new Date().toLocaleDateString('ar-EG');
+        
+        const reference = document.getElementById('reference').value;
+        const refBadge = document.getElementById('referenceBadge');
+        refBadge.innerText = reference.toUpperCase();
+        refBadge.className = `meta-badge reference ${reference}`;
 
-  document.querySelectorAll("#materials tr").forEach(r => {
-    const i = r.querySelectorAll("input");
-    labels.push(i[0].value || "Material");
-    data.push(Number(i[1].value) || 0);
-  });
+        // توليد جدول افتراضي للمكونات (يمكنك ربطه بقاعدة بيانات لاحقاً)
+        const tableBody = document.querySelector('#formulaTable tbody');
+        tableBody.innerHTML = `
+            <tr>
+                <td>المادة الفعالة المختار</td>
+                <td>500 مجم</td>
+                <td>مادة فعالة</td>
+                <td>$0.25</td>
+                <td>USP/BP</td>
+            </tr>
+            <tr class="total-row">
+                <td>الإجمالي</td>
+                <td>100%</td>
+                <td>-</td>
+                <td>$0.42</td>
+                <td>-</td>
+            </tr>
+        `;
 
-  if (chart) chart.destroy();
-  chart = new Chart(document.getElementById("chart"), {
-    type: "pie",
-    data: { labels, datasets: [{ data }] }
-  });
-}
-
-document.addEventListener("input", calculate);
-
-// PDF Export
-document.getElementById("exportPDF").onclick = () => {
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF();
-  pdf.text("ChemFormula™ – Official Report", 10, 15);
-  pdf.text(`Active Ingredient: ${aiName.value}`, 10, 30);
-  pdf.text(`Weight: ${aiWeight.value} kg`, 10, 40);
-  pdf.text(`Total Weight: ${totalWeight.value} kg`, 10, 50);
-  pdf.text("Disclaimer: For professional use only.", 10, 80);
-  pdf.save("ChemFormula_Report.pdf");
-};
+        // التمرير التلقائي للنتائج
+        resultsContent.scrollIntoView({ behavior: 'smooth' });
+    });
+});
