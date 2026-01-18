@@ -10,32 +10,29 @@
 </head>
 <body>
     <header class="main-header" style="background: linear-gradient(135deg, #004d40, #00796b);">
-        <div class="container">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h1><i class="fas fa-pills"></i> برو فارما</h1>
-                <a href="index.html" class="lang-switch">English <i class="fas fa-globe"></i></a>
-            </div>
+        <div class="container header-flex">
+            <h1><i class="fas fa-pills"></i> فارما أوبتمايزر</h1>
+            <a href="index.html" class="lang-switch">English <i class="fas fa-globe"></i></a>
         </div>
     </header>
 
     <main class="container">
         <div class="grid-layout">
             <section class="card">
-                <h3><i class="fas fa-microscope"></i> مدخلات الصياغة</h3>
+                <h3><i class="fas fa-edit"></i> مدخلات الصياغة</h3>
                 <form id="pharmaForm">
                     <label>المادة الفعالة (API):</label>
                     <select id="apiName">
-                        <option value="paracetamol">باراسيتامول</option>
-                        <option value="ibuprofen">إيبوبروفين</option>
+                        <option value="paracetamol">باراسيتامول (Paracetamol)</option>
+                        <option value="ibuprofen">إيبوبروفين (Ibuprofen)</option>
                     </select>
                     <label>وزن القرص المستهدف (mg):</label>
                     <input type="number" id="targetWeight" value="700">
                     <label>حجم التشغيلة (عدد الأقراص):</label>
                     <input type="number" id="batchSize" value="100000">
-                    <button type="submit" class="btn-optimize">بدء التحليل الذكي</button>
+                    <button type="submit" class="btn-optimize">بدء التحليل والتحسين</button>
                 </form>
             </section>
-
             <section id="resultsContent" class="card" style="display:none;">
                 <div id="resultOutput"></div>
             </section>
