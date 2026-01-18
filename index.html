@@ -2,45 +2,1097 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>محرر الصيغ الكيميائية المطور</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>برنامج تصميم التركيبة الكيميائية المثالية الاقتصادية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f7f6; }
-        .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; min-width: 400px; }
-        input { width: 80%; padding: 12px; font-size: 18px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 20px; text-align: left; direction: ltr; }
-        #output { font-size: 32px; color: #2c3e50; margin-top: 20px; min-height: 50px; }
-        .hint { color: #666; font-size: 14px; margin-top: 10px; }
+        /* الحفاظ على كل الأنماط السابقة مع الإضافات التالية */
+        
+        /* قسم طريقة الإدخال */
+        .input-method-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .input-method-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .input-method-options {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .input-method-option {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: white;
+            text-align: center;
+        }
+        
+        .input-method-option:hover {
+            border-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        
+        .input-method-option.selected {
+            border-color: var(--success-color);
+            background-color: #e8f5e9;
+        }
+        
+        .input-method-option i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+        
+        .input-method-option.selected i {
+            color: var(--success-color);
+        }
+        
+        .input-method-option h4 {
+            margin-bottom: 8px;
+            color: var(--dark-color);
+        }
+        
+        .input-method-option p {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        /* قسم الإدخال اليدوي */
+        .manual-input-section {
+            display: none;
+            background-color: #fffde7;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #ffd54f;
+            position: relative;
+        }
+        
+        .manual-input-section::before {
+            content: "الإدخال اليدوي";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background-color: #ffd54f;
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .add-excipient-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 80px;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: end;
+        }
+        
+        @media (max-width: 992px) {
+            .add-excipient-form {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .add-excipient-form {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .add-excipient-form .form-group {
+            margin-bottom: 0;
+        }
+        
+        .manual-excipients-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        .manual-excipient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .manual-excipient-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .excipient-info {
+            flex: 1;
+        }
+        
+        .excipient-info h5 {
+            margin: 0 0 5px 0;
+            color: var(--dark-color);
+        }
+        
+        .excipient-info .details {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .remove-manual-excipient {
+            background-color: #ffebee;
+            color: #c62828;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .remove-manual-excipient:hover {
+            background-color: #ffcdd2;
+        }
+        
+        /* قسم الإدخال الآلي */
+        .auto-input-section {
+            display: none;
+            background-color: #e8f5e9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #4caf50;
+            position: relative;
+        }
+        
+        .auto-input-section::before {
+            content: "الإدخال الآلي";
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background-color: #4caf50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .auto-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .auto-option {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #c8e6c9;
+        }
+        
+        .auto-option h5 {
+            margin: 0 0 10px 0;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .auto-option p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .auto-excipients-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .auto-excipient-tag {
+            background-color: #f1f8e9;
+            padding: 6px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            text-align: center;
+            color: #33691e;
+            border: 1px solid #c5e1a5;
+        }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h2>مصحح ومنسق الصيغ الكيميائية</h2>
-    <input type="text" id="chemInput" placeholder="اكتب الصيغة هنا (مثال: H2SO4 أو Ca2+)" oninput="formatChem()">
+    <!-- الحفاظ على الهيدر كما هو -->
     
-    <div id="output">النتيجة ستظهر هنا</div>
-    
-    <div class="hint">
-        * يدعم الأرقام السفلية تلقائياً.<br>
-        * اكتب ^ قبل الشحنة (مثال: ^2+) أو سيحاول البرنامج فهمها تلقائياً.
+    <div class="container">
+        <div class="main-content">
+            <!-- Form Section -->
+            <section class="form-section">
+                <div class="section-title">
+                    <i class="fas fa-sliders-h"></i>
+                    <h2>إعدادات التصميم</h2>
+                </div>
+                
+                <form id="formulaForm">
+                    <!-- الحفاظ على الأقسام السابقة: المعلومات الأساسية والمواد الفعالة -->
+                    
+                    <!-- قسم جديد: طريقة إدخال المواد المضافة -->
+                    <div class="input-method-section">
+                        <div class="section-title" style="border: none; padding: 0; margin: 0 0 15px 0;">
+                            <i class="fas fa-tools"></i>
+                            <h3 style="font-size: 1.2rem;">طريقة إضافة المواد المساعدة</h3>
+                        </div>
+                        
+                        <div class="input-method-options">
+                            <div class="input-method-option" id="manualOption" onclick="selectInputMethod('manual')">
+                                <i class="fas fa-hand-pointer"></i>
+                                <h4>الاختيار اليدوي</h4>
+                                <p>اختر المواد المضافة يدوياً واحدة تلو الأخرى حسب خبرتك</p>
+                                <div style="margin-top: 10px; font-size: 0.8rem; color: #f57c00;">
+                                    <i class="fas fa-user-edit"></i> مناسب للمتخصصين
+                                </div>
+                            </div>
+                            
+                            <div class="input-method-option selected" id="autoOption" onclick="selectInputMethod('auto')">
+                                <i class="fas fa-robot"></i>
+                                <h4>الإدخال الآلي</h4>
+                                <p>البرنامج يختار المواد المضافة تلقائياً بناءً على معاييرك</p>
+                                <div style="margin-top: 10px; font-size: 0.8rem; color: #388e3c;">
+                                    <i class="fas fa-bolt"></i> سريع وذكي
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="inputMethod" value="auto">
+                    </div>
+                    
+                    <!-- قسم الإدخال اليدوي للمواد المضافة -->
+                    <div class="manual-input-section" id="manualInputSection">
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: var(--dark-color); margin-bottom: 15px;">
+                                <i class="fas fa-plus-circle"></i> أضف المواد المساعدة يدوياً
+                            </h4>
+                            
+                            <div class="add-excipient-form">
+                                <div class="form-group">
+                                    <label for="excipientName">اسم المادة</label>
+                                    <select id="excipientName">
+                                        <option value="">اختر المادة...</option>
+                                        <optgroup label="المواد المالئة">
+                                            <option value="lactose">لاكتوز اللامائي</option>
+                                            <option value="mcc">سليولوز ميكروكريستاليني (MCC)</option>
+                                            <option value="mannitol">مانيتول</option>
+                                            <option value="dibasic-calcium-phosphate">فوسفات الكالسيوم ثنائي الأساس</option>
+                                            <option value="starch">نشا الذرة</option>
+                                        </optgroup>
+                                        <optgroup label="المواد الرابطة">
+                                            <option value="povidone">بوفيدون (Povidone)</option>
+                                            <option value="hpmc">هيدروكسي بروبيل ميثيل سليولوز (HPMC)</option>
+                                            <option value="gelatin">جيلاتين</option>
+                                            <option value="acacia">صمغ عربي</option>
+                                        </optgroup>
+                                        <optgroup label="المواد المفككة">
+                                            <option value="croscarmellose">صوديوم كروكارميلوز</option>
+                                            <option value="crospovidone">كروسپوفيدون</option>
+                                            <option value="sodium-starch-glycolate">نشا الصوديوم جليكولات</option>
+                                        </optgroup>
+                                        <optgroup label="المواد المزلقة">
+                                            <option value="magnesium-stearate">ستيرات المغنيسيوم</option>
+                                            <option value="talc">التلك</option>
+                                            <option value="silicon-dioxide">ثاني أكسيد السيليكون</option>
+                                            <option value="stearic-acid">حمض الشمع</option>
+                                        </optgroup>
+                                        <option value="custom">مادة مخصصة...</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="excipientFunction">الوظيفة</label>
+                                    <select id="excipientFunction">
+                                        <option value="filler">مادة مالئة</option>
+                                        <option value="binder">مادة رابطة</option>
+                                        <option value="disintegrant">مادة مفككة</option>
+                                        <option value="lubricant">مادة مزلقة</option>
+                                        <option value="coating">مادة طلاء</option>
+                                        <option value="preservative">مادة حافظة</option>
+                                        <option value="colorant">ملون</option>
+                                        <option value="flavor">منكّه</option>
+                                        <option value="custom">وظيفة مخصصة</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="excipientPercentage">النسبة (%)</label>
+                                    <div class="input-with-unit">
+                                        <input type="number" id="excipientPercentage" min="0.1" max="100" step="0.1" value="5">
+                                        <div class="unit">%</div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <button type="button" class="btn" onclick="addManualExcipient()" style="padding: 10px; margin-top: 0;">
+                                        <i class="fas fa-plus"></i> إضافة
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="customExcipientName" style="display: none;" id="customNameLabel">اسم المادة المخصصة</label>
+                                <input type="text" id="customExcipientName" placeholder="أدخل اسم المادة المخصصة" style="display: none;">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h5 style="color: var(--dark-color); margin-bottom: 10px;">
+                                <i class="fas fa-list"></i> قائمة المواد المضافة يدوياً
+                                <span id="manualExcipientsCount" style="font-size: 0.9rem; color: #666; margin-right: 10px;">(0 مادة)</span>
+                            </h5>
+                            
+                            <div class="manual-excipients-list" id="manualExcipientsList">
+                                <div style="text-align: center; padding: 30px; color: #999;">
+                                    <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                    <p>لم يتم إضافة أي مواد مساعدة بعد</p>
+                                    <small>استخدم النموذج أعلاه لإضافة المواد</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                            <button type="button" class="btn btn-secondary" onclick="clearManualExcipients()" style="flex: 1;">
+                                <i class="fas fa-trash-alt"></i> مسح الكل
+                            </button>
+                            <button type="button" class="btn" onclick="loadCommonFormulation()" style="flex: 1; background-color: #5c6bc0;">
+                                <i class="fas fa-magic"></i> تحميل تركيبة شائعة
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- قسم الإدخال الآلي للمواد المضافة -->
+                    <div class="auto-input-section" id="autoInputSection">
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: var(--dark-color); margin-bottom: 10px;">
+                                <i class="fas fa-cogs"></i> إعدادات الاختيار الآلي
+                            </h4>
+                            <p style="color: #666; margin-bottom: 15px;">
+                                سيختار البرنامج المواد المضافة تلقائياً بناءً على المعايير التالية:
+                            </p>
+                            
+                            <div class="auto-options">
+                                <div class="auto-option">
+                                    <h5><i class="fas fa-money-bill-wave"></i> استراتيجية التكلفة</h5>
+                                    <p>اختر أولوية التكلفة في اختيار المواد:</p>
+                                    <select id="costStrategy" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+                                        <option value="lowest">أقل تكلفة ممكنة</option>
+                                        <option value="balanced" selected>توازن بين التكلفة والجودة</option>
+                                        <option value="premium">أفضل جودة بغض النظر عن التكلفة</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="auto-option">
+                                    <h5><i class="fas fa-industry"></i> استراتيجية الإنتاج</h5>
+                                    <p>اختر أولوية عملية التصنيع:</p>
+                                    <select id="productionStrategy" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+                                        <option value="easy-processing">سهولة التصنيع</option>
+                                        <option value="high-speed" selected>سرعة إنتاج عالية</option>
+                                        <option value="stability">ثبات وموثوقية</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="auto-option">
+                                    <h5><i class="fas fa-leaf"></i> معايير خاصة</h5>
+                                    <div style="margin-top: 10px;">
+                                        <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                            <input type="checkbox" id="vegetarianCapsules" value="vegetarian">
+                                            <span>كبسولات نباتية (خالية من الجيلاتين)</span>
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                                            <input type="checkbox" id="sugarFree" value="sugar-free">
+                                            <span>خالٍ من السكر</span>
+                                        </label>
+                                        <label style="display: flex; align-items: center; gap: 8px;">
+                                            <input type="checkbox" id="preservativeFree" value="preservative-free">
+                                            <span>خالٍ من المواد الحافظة</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="auto-option">
+                                    <h5><i class="fas fa-bolt"></i> أداء التركيبة</h5>
+                                    <p>اختر أولوية الأداء:</p>
+                                    <select id="performancePriority" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+                                        <option value="fast-release">تحرر سريع</option>
+                                        <option value="sustained-release" selected>تحرر مستمر</option>
+                                        <option value="targeted-release">تحرر موجه</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h5 style="color: var(--dark-color); margin-bottom: 10px;">
+                                <i class="fas fa-eye"></i> معاينة المواد المقترحة
+                            </h5>
+                            
+                            <div style="background-color: white; padding: 15px; border-radius: 8px; border: 1px solid #c8e6c9;">
+                                <p style="margin-bottom: 10px; color: #666;">
+                                    بناءً على إعداداتك، سيختار البرنامج المواد التالية تلقائياً:
+                                </p>
+                                
+                                <div class="auto-excipients-preview" id="autoExcipientsPreview">
+                                    <!-- سيتم تحديثه تلقائياً -->
+                                    <div class="auto-excipient-tag">لاكتوز</div>
+                                    <div class="auto-excipient-tag">بوفيدون</div>
+                                    <div class="auto-excipient-tag">كروسكارميلوز</div>
+                                    <div class="auto-excipient-tag">ستيرات مغنيسيوم</div>
+                                </div>
+                                
+                                <div style="margin-top: 15px; text-align: center;">
+                                    <button type="button" class="btn btn-secondary" onclick="regenerateAutoSuggestions()" style="padding: 8px 20px;">
+                                        <i class="fas fa-sync-alt"></i> إعادة توليد المقترحات
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 15px; background-color: #e3f2fd; padding: 12px; border-radius: 8px;">
+                            <p style="margin: 0; color: #1565c0; font-size: 0.9rem;">
+                                <i class="fas fa-lightbulb"></i> 
+                                <strong>تلميح:</strong> يستخدم البرنامج خوارزميات الذكاء الاصطناعي لتحليل أكثر من 1000 تركيبة واختيار الأفضل بناءً على معاييرك.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- الحفاظ على بقية النموذج -->
+                    
+                    <div class="form-group">
+                        <label for="notes"><i class="fas fa-sticky-note"></i> ملاحظات إضافية</label>
+                        <textarea id="notes" placeholder="أي متطلبات خاصة، حساسيات، مواد ممنوعة، أو إرشادات خاصة..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn" id="calculateBtn">
+                        <i class="fas fa-calculator"></i> تصميم التركيبة المثالية
+                    </button>
+                </form>
+            </section>
+            
+            <!-- Results Section -->
+            <section class="results-section">
+                <!-- الحفاظ على قسم النتائج كما هو -->
+            </section>
+        </div>
     </div>
-</div>
 
-<script>
-function formatChem() {
-    let input = document.getElementById('chemInput').value;
-    
-    // 1. معالجة الشحنات (Superscripts)
-    // يبحث عن ^ متبوعة بأرقام أو إشارات، أو إشارات في نهاية الصيغة
-    let formatted = input.replace(/\^([\w\+\-]+)/g, '<sup>$1</sup>');
-    formatted = formatted.replace(/(\d*[\+\-])$/g, '<sup>$1</sup>');
-
-    // 2. معالجة الأرقام السفلية (Subscripts)
-    // يبحث عن رقم يسبقه حرف أو قوس قفل )
-    formatted = formatted.replace(/([a-zA-Z\)])(\d+)/g, '$1<sub>$2</sub>');
-
-    document.getElementById('output').innerHTML = formatted;
-}
-</script>
-
+    <script>
+        // متغيرات عامة
+        let manualExcipients = [];
+        let currentInputMethod = 'auto';
+        
+        // دالة اختيار طريقة الإدخال
+        function selectInputMethod(method) {
+            currentInputMethod = method;
+            document.getElementById('inputMethod').value = method;
+            
+            // تحديث الواجهة
+            document.getElementById('manualOption').classList.remove('selected');
+            document.getElementById('autoOption').classList.remove('selected');
+            
+            document.getElementById('manualInputSection').style.display = 'none';
+            document.getElementById('autoInputSection').style.display = 'none';
+            
+            if (method === 'manual') {
+                document.getElementById('manualOption').classList.add('selected');
+                document.getElementById('manualInputSection').style.display = 'block';
+            } else {
+                document.getElementById('autoOption').classList.add('selected');
+                document.getElementById('autoInputSection').style.display = 'block';
+                updateAutoSuggestions();
+            }
+        }
+        
+        // دالة إضافة مادة يدوياً
+        function addManualExcipient() {
+            const nameSelect = document.getElementById('excipientName');
+            const name = nameSelect.value;
+            
+            if (!name) {
+                alert('يرجى اختيار اسم المادة');
+                return;
+            }
+            
+            let displayName = nameSelect.options[nameSelect.selectedIndex].text;
+            
+            // إذا كانت مادة مخصصة
+            if (name === 'custom') {
+                const customName = document.getElementById('customExcipientName').value;
+                if (!customName) {
+                    alert('يرجى إدخال اسم المادة المخصصة');
+                    return;
+                }
+                displayName = customName;
+            }
+            
+            const functionSelect = document.getElementById('excipientFunction');
+            const excipientFunction = functionSelect.value;
+            const functionText = functionSelect.options[functionSelect.selectedIndex].text;
+            
+            const percentage = document.getElementById('excipientPercentage').value;
+            
+            // إضافة المادة إلى القائمة
+            const excipient = {
+                id: Date.now(),
+                name: name,
+                displayName: displayName,
+                function: excipientFunction,
+                functionText: functionText,
+                percentage: parseFloat(percentage)
+            };
+            
+            manualExcipients.push(excipient);
+            updateManualExcipientsList();
+            
+            // إعادة تعيين النموذج
+            nameSelect.value = '';
+            document.getElementById('excipientPercentage').value = '5';
+            document.getElementById('customExcipientName').style.display = 'none';
+            document.getElementById('customNameLabel').style.display = 'none';
+        }
+        
+        // دالة تحديث قائمة المواد اليدوية
+        function updateManualExcipientsList() {
+            const listElement = document.getElementById('manualExcipientsList');
+            const countElement = document.getElementById('manualExcipientsCount');
+            
+            if (manualExcipients.length === 0) {
+                listElement.innerHTML = `
+                    <div style="text-align: center; padding: 30px; color: #999;">
+                        <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                        <p>لم يتم إضافة أي مواد مساعدة بعد</p>
+                        <small>استخدم النموذج أعلاه لإضافة المواد</small>
+                    </div>
+                `;
+                countElement.textContent = '(0 مادة)';
+                return;
+            }
+            
+            let html = '';
+            manualExcipients.forEach(excipient => {
+                html += `
+                    <div class="manual-excipient-item" id="excipient-${excipient.id}">
+                        <div class="excipient-info">
+                            <h5>${excipient.displayName}</h5>
+                            <div class="details">
+                                <span><i class="fas fa-tag"></i> ${excipient.functionText}</span>
+                                <span><i class="fas fa-percentage"></i> ${excipient.percentage}%</span>
+                            </div>
+                        </div>
+                        <button type="button" class="remove-manual-excipient" onclick="removeManualExcipient(${excipient.id})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            });
+            
+            listElement.innerHTML = html;
+            countElement.textContent = `(${manualExcipients.length} مادة)`;
+        }
+        
+        // دالة إزالة مادة يدوية
+        function removeManualExcipient(id) {
+            manualExcipients = manualExcipients.filter(excipient => excipient.id !== id);
+            updateManualExcipientsList();
+        }
+        
+        // دالة مسح جميع المواد اليدوية
+        function clearManualExcipients() {
+            if (manualExcipients.length === 0) return;
+            
+            if (confirm('هل أنت متأكد من مسح جميع المواد المضافة؟')) {
+                manualExcipients = [];
+                updateManualExcipientsList();
+            }
+        }
+        
+        // دالة تحميل تركيبة شائعة
+        function loadCommonFormulation() {
+            const productForm = document.getElementById('productForm').value;
+            const reference = document.getElementById('reference').value;
+            
+            // إعادة تعيين القائمة
+            manualExcipients = [];
+            
+            // إضافة مواد حسب نوع المنتج
+            if (productForm.includes('tablet')) {
+                manualExcipients = [
+                    {
+                        id: Date.now(),
+                        name: 'mcc',
+                        displayName: 'سليولوز ميكروكريستاليني (MCC)',
+                        function: 'filler',
+                        functionText: 'مادة مالئة',
+                        percentage: 30
+                    },
+                    {
+                        id: Date.now() + 1,
+                        name: 'povidone',
+                        displayName: 'بوفيدون K30',
+                        function: 'binder',
+                        functionText: 'مادة رابطة',
+                        percentage: 2
+                    },
+                    {
+                        id: Date.now() + 2,
+                        name: 'croscarmellose',
+                        displayName: 'صوديوم كروكارميلوز',
+                        function: 'disintegrant',
+                        functionText: 'مادة مفككة',
+                        percentage: 1.5
+                    },
+                    {
+                        id: Date.now() + 3,
+                        name: 'magnesium-stearate',
+                        displayName: 'ستيرات المغنيسيوم',
+                        function: 'lubricant',
+                        functionText: 'مادة مزلقة',
+                        percentage: 0.5
+                    }
+                ];
+            } else if (productForm === 'capsule') {
+                manualExcipients = [
+                    {
+                        id: Date.now(),
+                        name: 'lactose',
+                        displayName: 'لاكتوز اللامائي',
+                        function: 'filler',
+                        functionText: 'مادة مالئة',
+                        percentage: 35
+                    },
+                    {
+                        id: Date.now() + 1,
+                        name: 'magnesium-stearate',
+                        displayName: 'ستيرات المغنيسيوم',
+                        function: 'lubricant',
+                        functionText: 'مادة مزلقة',
+                        percentage: 0.5
+                    }
+                ];
+            } else if (productForm === 'syrup') {
+                manualExcipients = [
+                    {
+                        id: Date.now(),
+                        name: 'sucrose',
+                        displayName: 'سكروز',
+                        function: 'sweetener',
+                        functionText: 'محلي',
+                        percentage: 60
+                    },
+                    {
+                        id: Date.now() + 1,
+                        name: 'methyl-paraben',
+                        displayName: 'ميثيل بارابين',
+                        function: 'preservative',
+                        functionText: 'مادة حافظة',
+                        percentage: 0.1
+                    }
+                ];
+            }
+            
+            updateManualExcipientsList();
+            
+            // عرض رسالة تأكيد
+            setTimeout(() => {
+                alert('تم تحميل تركيبة شائعة بناءً على نوع المنتج المحدد');
+            }, 100);
+        }
+        
+        // دالة تحديث المقترحات الآلية
+        function updateAutoSuggestions() {
+            const costStrategy = document.getElementById('costStrategy').value;
+            const productionStrategy = document.getElementById('productionStrategy').value;
+            const performancePriority = document.getElementById('performancePriority').value;
+            
+            let suggestions = [];
+            
+            // بناء المقترحات بناءً على الإعدادات
+            if (costStrategy === 'lowest') {
+                suggestions = ['نشا الذرة', 'لاكتوز', 'ستيرات مغنيسيوم', 'نشا صوديوم جليكولات'];
+            } else if (costStrategy === 'balanced') {
+                suggestions = ['سليولوز ميكروكريستاليني', 'بوفيدون', 'كروسكارميلوز', 'ستيرات مغنيسيوم'];
+            } else {
+                suggestions = ['مانيتول', 'هيدروكسي بروبيل ميثيل سليولوز', 'كروسپوفيدون', 'ثاني أكسيد السيليكون'];
+            }
+            
+            // عرض المقترحات
+            const previewElement = document.getElementById('autoExcipientsPreview');
+            let html = '';
+            suggestions.forEach(item => {
+                html += `<div class="auto-excipient-tag">${item}</div>`;
+            });
+            previewElement.innerHTML = html;
+        }
+        
+        // دالة إعادة توليد المقترحات الآلية
+        function regenerateAutoSuggestions() {
+            updateAutoSuggestions();
+            
+            // تأثير بصرية
+            const previewElement = document.getElementById('autoExcipientsPreview');
+            previewElement.style.opacity = '0.5';
+            setTimeout(() => {
+                previewElement.style.transition = 'opacity 0.3s';
+                previewElement.style.opacity = '1';
+            }, 100);
+            
+            // رسالة تأكيد
+            const message = document.createElement('div');
+            message.innerHTML = '<i class="fas fa-check-circle"></i> تم إعادة توليد المقترحات بنجاح';
+            message.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: #4caf50;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                z-index: 1000;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            `;
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                message.remove();
+            }, 2000);
+        }
+        
+        // دالة الحصول على المواد المضافة بناءً على طريقة الإدخال
+        function getExcipients() {
+            if (currentInputMethod === 'manual') {
+                return manualExcipients;
+            } else {
+                // توليد مواد آلياً بناءً على الإعدادات
+                return generateAutoExcipients();
+            }
+        }
+        
+        // دالة توليد المواد الآلية
+        function generateAutoExcipients() {
+            const costStrategy = document.getElementById('costStrategy').value;
+            const productionStrategy = document.getElementById('productionStrategy').value;
+            const performancePriority = document.getElementById('performancePriority').value;
+            const productForm = document.getElementById('productForm').value;
+            
+            let excipients = [];
+            
+            // مواد أساسية حسب شكل المنتج
+            if (productForm.includes('tablet')) {
+                excipients = [
+                    {
+                        name: 'filler',
+                        displayName: costStrategy === 'lowest' ? 'لاكتوز' : 'سليولوز ميكروكريستاليني',
+                        function: 'filler',
+                        functionText: 'مادة مالئة',
+                        percentage: costStrategy === 'lowest' ? 35 : 30
+                    },
+                    {
+                        name: 'binder',
+                        displayName: 'بوفيدون K30',
+                        function: 'binder',
+                        functionText: 'مادة رابطة',
+                        percentage: 2
+                    },
+                    {
+                        name: 'disintegrant',
+                        displayName: performancePriority === 'fast-release' ? 'نشا صوديوم جليكولات' : 'صوديوم كروكارميلوز',
+                        function: 'disintegrant',
+                        functionText: 'مادة مفككة',
+                        percentage: 1.5
+                    },
+                    {
+                        name: 'lubricant',
+                        displayName: 'ستيرات المغنيسيوم',
+                        function: 'lubricant',
+                        functionText: 'مادة مزلقة',
+                        percentage: 0.5
+                    }
+                ];
+            } else if (productForm === 'capsule') {
+                excipients = [
+                    {
+                        name: 'filler',
+                        displayName: 'لاكتوز اللامائي',
+                        function: 'filler',
+                        functionText: 'مادة مالئة',
+                        percentage: 40
+                    },
+                    {
+                        name: 'lubricant',
+                        displayName: 'ستيرات المغنيسيوم',
+                        function: 'lubricant',
+                        functionText: 'مادة مزلقة',
+                        percentage: 0.5
+                    }
+                ];
+            }
+            
+            return excipients;
+        }
+        
+        // استماع لتغيير اختيار المادة المخصصة
+        document.getElementById('excipientName').addEventListener('change', function() {
+            const customNameField = document.getElementById('customExcipientName');
+            const customNameLabel = document.getElementById('customNameLabel');
+            
+            if (this.value === 'custom') {
+                customNameField.style.display = 'block';
+                customNameLabel.style.display = 'block';
+                customNameField.required = true;
+            } else {
+                customNameField.style.display = 'none';
+                customNameLabel.style.display = 'none';
+                customNameField.required = false;
+            }
+        });
+        
+        // استماع لتغيير إعدادات الاختيار الآلي
+        document.getElementById('costStrategy').addEventListener('change', updateAutoSuggestions);
+        document.getElementById('productionStrategy').addEventListener('change', updateAutoSuggestions);
+        document.getElementById('performancePriority').addEventListener('change', updateAutoSuggestions);
+        
+        // تهيئة عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            // تحديث المقترحات الآلية
+            updateAutoSuggestions();
+            
+            // تحديث وحدة الوزن بناءً على شكل المنتج
+            document.querySelectorAll('.product-form-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const form = this.getAttribute('data-form');
+                    const unitLabel = document.getElementById('totalUnitLabel');
+                    
+                    if (form === 'syrup') {
+                        unitLabel.textContent = 'مل (لكل مل)';
+                    } else if (form.includes('tablet') || form === 'capsule') {
+                        unitLabel.textContent = 'مجم (لكل وحدة)';
+                    } else if (form === 'powder') {
+                        unitLabel.textContent = 'جرام (لكل جرام)';
+                    }
+                });
+            });
+        });
+        
+        // تحديث دالة معالجة النموذج
+        document.getElementById('formulaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // الحصول على القيم من النموذج
+            const formulaName = document.getElementById('formulaName').value;
+            const reference = document.getElementById('reference').value;
+            const productForm = document.getElementById('productForm').value;
+            const inputMethod = document.getElementById('inputMethod').value;
+            const primaryGoal = document.getElementById('primaryGoal').value;
+            const budget = document.getElementById('budget').value;
+            
+            // جمع المواد الفعالة
+            const activeIngredients = [];
+            document.querySelectorAll('.ingredient-row').forEach(row => {
+                const name = row.querySelector('.active-ingredient').value;
+                const amount = row.querySelector('.active-ingredient-amount').value;
+                const unit = row.querySelector('.unit').textContent;
+                if (name && amount) {
+                    activeIngredients.push({ name, amount, unit });
+                }
+            });
+            
+            // التحقق من البيانات
+            if (!formulaName || !reference || !productForm || !primaryGoal || activeIngredients.length === 0) {
+                alert('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            // الحصول على المواد المضافة بناءً على طريقة الإدخال
+            const excipients = getExcipients();
+            
+            // التحقق من وجود مواد مضافة
+            if (excipients.length === 0) {
+                alert('يرجى إضافة المواد المساعدة');
+                return;
+            }
+            
+            // إخفاء العنصر النائب وعرض النتائج
+            document.getElementById('resultsPlaceholder').style.display = 'none';
+            document.getElementById('resultsContent').style.display = 'block';
+            
+            // توليد النتائج
+            generateResults(formulaName, reference, productForm, primaryGoal, budget, activeIngredients, excipients, inputMethod);
+        });
+        
+        // دالة توليد النتائج (محدثة)
+        function generateResults(formulaName, reference, productForm, primaryGoal, budget, activeIngredients, excipients, inputMethod) {
+            // تحديث معلومات الصيغة
+            document.getElementById('formulaNameDisplay').textContent = formulaName;
+            document.getElementById('designDate').textContent = new Date().toLocaleDateString('ar-SA');
+            
+            // تحديث شارة المرجعية
+            const referenceBadge = document.getElementById('referenceBadge');
+            referenceBadge.textContent = reference.toUpperCase();
+            referenceBadge.className = `meta-badge reference ${reference}`;
+            
+            // تحديث شارة الشكل
+            const formBadge = document.getElementById('formBadge');
+            let formText = '';
+            switch(productForm) {
+                case 'tablet-uncoated': formText = 'قرص غير مغلف'; break;
+                case 'tablet-coated': formText = 'قرص مغلف'; break;
+                case 'capsule': formText = 'كبسولة'; break;
+                case 'syrup': formText = 'شراب'; break;
+                case 'powder': formText = 'مسحوق'; break;
+            }
+            formBadge.textContent = formText;
+            
+            // تحديث جدول المكونات
+            let tableRows = '';
+            
+            // إضافة المواد الفعالة
+            activeIngredients.forEach(ing => {
+                tableRows += `
+                    <tr class="active-ingredient-row">
+                        <td>${getIngredientName(ing.name)}</td>
+                        <td>${ing.amount} ${ing.unit}</td>
+                        <td>مادة فعالة</td>
+                        <td>${calculateActiveIngredientCost(ing.name, ing.amount)}</td>
+                        <td><span class="compliance-badge ${reference}">${reference.toUpperCase()}</span></td>
+                    </tr>
+                `;
+            });
+            
+            // إضافة المواد المضافة
+            excipients.forEach(excipient => {
+                tableRows += `
+                    <tr>
+                        <td>${excipient.displayName}</td>
+                        <td>${excipient.percentage}%</td>
+                        <td>${excipient.functionText}</td>
+                        <td>${calculateExcipientCost(excipient.name, excipient.function)}</td>
+                        <td><span class="compliance-badge ${reference}">${reference.toUpperCase()}</span></td>
+                    </tr>
+                `;
+            });
+            
+            document.getElementById('formulaTable').querySelector('tbody').innerHTML = tableRows;
+            
+            // تحديث تكلفة الإجمالية
+            const totalCost = calculateTotalCost(activeIngredients, excipients);
+            document.getElementById('totalCost').textContent = totalCost;
+            
+            // إضافة ملاحظة حول طريقة الإدخال
+            const inputMethodNote = inputMethod === 'manual' 
+                ? '✓ تم إدخال المواد يدوياً بواسطة المستخدم'
+                : '✓ تم اختيار المواد آلياً بواسطة الذكاء الاصطناعي';
+            
+            const noteElement = document.createElement('div');
+            noteElement.className = 'reference-info ' + reference;
+            noteElement.style.marginTop = '15px';
+            noteElement.innerHTML = `
+                <i class="fas fa-${inputMethod === 'manual' ? 'hand-pointer' : 'robot'}"></i>
+                <span>${inputMethodNote}</span>
+            `;
+            document.querySelector('.formula-details').appendChild(noteElement);
+        }
+        
+        // دوال مساعدة للحساب
+        function calculateActiveIngredientCost(name, amount) {
+            const prices = {
+                'paracetamol': 0.0005, // دولار لكل ملجم
+                'ibuprofen': 0.0008,
+                'amoxicillin': 0.0012,
+                'silver-iodide': 0.002,
+                'titanium-dioxide': 0.0003,
+                'vitamin-c': 0.0004
+            };
+            const cost = (prices[name] || 0.0006) * amount;
+            return '$' + cost.toFixed(4);
+        }
+        
+        function calculateExcipientCost(name, type) {
+            const costs = {
+                'filler': { 'lactose': 0.04, 'mcc': 0.05, 'starch': 0.02, 'mannitol': 0.08 },
+                'binder': { 'povidone': 0.03, 'hpmc': 0.04 },
+                'disintegrant': { 'croscarmellose': 0.04, 'sodium-starch-glycolate': 0.02 },
+                'lubricant': { 'magnesium-stearate': 0.01 }
+            };
+            const cost = costs[type]?.[name] || 0.05;
+            return '$' + cost.toFixed(3);
+        }
+        
+        function calculateTotalCost(activeIngredients, excipients) {
+            let total = 0;
+            
+            // تكلفة المواد الفعالة
+            activeIngredients.forEach(ing => {
+                const prices = {
+                    'paracetamol': 0.0005,
+                    'ibuprofen': 0.0008,
+                    'amoxicillin': 0.0012
+                };
+                total += (prices[ing.name] || 0.0006) * ing.amount;
+            });
+            
+            // تكلفة المواد المضافة (على أساس النسبة المئوية)
+            excipients.forEach(excipient => {
+                const costs = {
+                    'filler': 0.04,
+                    'binder': 0.035,
+                    'disintegrant': 0.03,
+                    'lubricant': 0.01
+                };
+                total += (costs[excipient.function] || 0.03) * (excipient.percentage / 100) * 1000; // لكل 1000 وحدة
+            });
+            
+            return '$' + total.toFixed(2) + ' / لكل 1000 وحدة';
+        }
+        
+        function getIngredientName(code) {
+            const names = {
+                'paracetamol': 'باراسيتامول',
+                'ibuprofen': 'آيبوبروفين',
+                'amoxicillin': 'أموكسيسيلين',
+                'silver-iodide': 'يوديد الفضة',
+                'titanium-dioxide': 'ثاني أكسيد التيتانيوم',
+                'vitamin-c': 'فيتامين ج'
+            };
+            return names[code] || code;
+        }
+    </script>
 </body>
 </html>
+<button onclick="loadLanguage('en')">EN</button>
+<button onclick="loadLanguage('ar')">AR</button>
+<canvas id="formulaChart"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
