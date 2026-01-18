@@ -1,0 +1,14 @@
+/* أضف هذا للجزء العلوي من ملف CSS السابق */
+.lang-switch {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+.lang-switch:hover {
+    background: white;
+    color: #004d40;
+}
