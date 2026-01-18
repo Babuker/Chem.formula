@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>محرر الصيغ الكيميائية المطور</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; background: #f4f7f6; }
+        .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: inline-block; min-width: 400px; }
+        input { width: 80%; padding: 12px; font-size: 18px; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 20px; text-align: left; direction: ltr; }
+        #output { font-size: 32px; color: #2c3e50; margin-top: 20px; min-height: 50px; }
+        .hint { color: #666; font-size: 14px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>مصحح ومنسق الصيغ الكيميائية</h2>
+    <input type="text" id="chemInput" placeholder="اكتب الصيغة هنا (مثال: H2SO4 أو Ca2+)" oninput="formatChem()">
+    
+    <div id="output">النتيجة ستظهر هنا</div>
+    
+    <div class="hint">
+        * يدعم الأرقام السفلية تلقائياً.<br>
+        * اكتب ^ قبل الشحنة (مثال: ^2+) أو سيحاول البرنامج فهمها تلقائياً.
+    </div>
+</div>
+
+<script>
+function formatChem() {
+    let input = document.getElementById('chemInput').value;
+    
+    // 1. معالجة الشحنات (Superscripts)
+    // يبحث عن ^ متبوعة بأرقام أو إشارات، أو إشارات في نهاية الصيغة
+    let formatted = input.replace(/\^([\w\+\-]+)/g, '<sup>$1</sup>');
+    formatted = formatted.replace(/(\d*[\+\-])$/g, '<sup>$1</sup>');
+
+    // 2. معالجة الأرقام السفلية (Subscripts)
+    // يبحث عن رقم يسبقه حرف أو قوس قفل )
+    formatted = formatted.replace(/([a-zA-Z\)])(\d+)/g, '$1<sub>$2</sub>');
+
+    document.getElementById('output').innerHTML = formatted;
+}
+</script>
+
+</body>
+</html>
