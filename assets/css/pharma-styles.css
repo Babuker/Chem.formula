@@ -1,0 +1,25 @@
+:root {
+    --primary: #004d40;
+    --accent: #00c853;
+    --bg: #f4f7f6;
+    --card: #ffffff;
+}
+
+body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; }
+.container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+.header-flex { display: flex; justify-content: space-between; align-items: center; color: white; }
+.main-header { background: var(--primary); padding: 20px 0; border-bottom: 4px solid var(--accent); }
+
+.lang-switch { background: rgba(255,255,255,0.2); color: white; padding: 8px 15px; border-radius: 20px; text-decoration: none; font-size: 0.9rem; }
+.lang-switch:hover { background: white; color: var(--primary); }
+
+.grid-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; margin-top: 20px; }
+@media (max-width: 768px) { .grid-layout { grid-template-columns: 1fr; } }
+
+.card { background: var(--card); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
+
+.btn-optimize { background: var(--accent); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: bold; }
+.pharma-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+.pharma-table th, .pharma-table td { padding: 12px; border: 1px solid #eee; text-align: inherit; }
+.pharma-table th { background: #f9f9f9; }
